@@ -1,0 +1,26 @@
+@startuml user_regitration
+title User registration flow
+start
+:User who completed 
+registration on Kratos UI;
+:Kratos server will send a webhook 
+to **wepass-core**;
+partition "**webhook** AfterRegistration" {
+    if (Check user \nemail existing?) is (yes) then
+        :Update user code to 
+        the new one;
+    else (no)
+    :Create a new user 
+    with email;
+    endif
+}
+stop
+@enduml
+
+@startuml user_invite
+title User invite flow
+start
+:User who completed 
+registration on Kratos UI;
+stop
+@enduml

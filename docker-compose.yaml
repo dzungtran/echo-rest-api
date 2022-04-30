@@ -1,0 +1,41 @@
+version: "3.0"
+
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - APP_PATH=./cmd/api/
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - backend
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    networks:
+      - backend
+    environment:
+      POSTGRES_DB: wepass_app
+      POSTGRES_USER: wepass
+      POSTGRES_PASSWORD: mobile
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:latest
+    networks:
+      - backend
+    ports:
+      - "6379:6379"
+
+networks:
+  backend:
+    driver: bridge

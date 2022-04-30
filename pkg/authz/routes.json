@@ -1,0 +1,23 @@
+{
+  "/admin/orgs": {
+    "GET": "list:org",
+    "POST": "create:org"
+  },
+  "/admin/orgs/:orgId": {
+    "DELETE": "delete:org",
+    "GET": "read:org",
+    "PUT": "update:org"
+  },
+  "/admin/orgs/:orgId/invites": {
+    "POST": "invite:org"
+  },
+  "/admin/users": {
+    "GET": "list:user",
+    "POST": "create:user"
+  },
+  "/admin/users/:userId": {
+    "DELETE": "delete:user",
+    "GET": "read:user",
+    "PUT": "update:user"
+  }
+}

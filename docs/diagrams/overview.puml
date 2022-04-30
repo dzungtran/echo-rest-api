@@ -1,0 +1,52 @@
+@startuml request_flow
+title Wepass Core sequence diagram
+
+autonumber
+skinparam maxMessageSize 100
+
+actor "User" as user
+participant "Login Screen\n" as login_scr
+participant "Dashboard\n" as dashboard
+participant "Auth API\n(Kratos Server)" as authn_api
+
+box "Wepass Core"
+participant "Authn middleware\n(Kratos Client)" as authn_midd
+participant "Authz\n(OPA)" as authz_opa
+participant "API Handlers\n" as api_handlers
+end box
+
+user -> login_scr : Enter credentials
+activate login_scr
+login_scr -> authn_api : Request log in
+activate authn_api
+authn_api -> authn_api : Verify user credentials
+authn_api -> login_scr : Retrive session cookies
+deactivate authn_api
+login_scr -> dashboard : Redirect
+note left: Write down \nsession cookies
+deactivate login_scr
+activate dashboard
+
+|||
+dashboard -> authn_midd: Send requests (include session cookies)
+activate authn_midd
+authn_midd -> authn_api: Request identity info
+activate authn_api
+authn_api -> authn_midd: Retrieve identity infomation
+deactivate authn_api
+note right: If retrieve identity info \nthen query user info from DB by email\nand set it to request context
+authn_midd -> authz_opa: Continue
+deactivate authn_midd
+activate authz_opa
+authz_opa -> authz_opa: Process rego rules
+authz_opa -> api_handlers: Continue
+note left: Give permission to user\nto continue process actions 
+deactivate authz_opa
+activate api_handlers
+
+api_handlers -> dashboard : Return results
+deactivate api_handlers
+dashboard -> user : Display result. Done
+deactivate dashboard
+
+@enduml

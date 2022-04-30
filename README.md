@@ -1,2 +1,7 @@
-# echo-rest-api
-A Golang restful API boilerplate. includes tools for module generation, authorization, authentication and more.
+# Echo rest API boilerplate
+
+A Golang restful API boilerplate based on Echo framework v4. Includes tools for module generation, db migration, authorization, authentication and more.
+
+## Overview
+
+## Credits
