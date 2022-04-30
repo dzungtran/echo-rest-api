@@ -3,12 +3,11 @@ module github.com/dzungtran/echo-rest-api
 go 1.18
 
 require (
-	cuelang.org/go v0.4.2
+	cuelang.org/go v0.4.3
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/Masterminds/squirrel v1.5.2
 	github.com/go-playground/validator/v10 v10.10.1
 	github.com/go-redis/redis/v8 v8.11.5
-	github.com/golang-jwt/jwt/v4 v4.4.1
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/jackc/pgx/v4 v4.15.0
 	github.com/jinzhu/copier v0.3.5
