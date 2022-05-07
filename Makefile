@@ -29,7 +29,6 @@ mock:
 
 setup:
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest 
-	go install github.com/vektra/mockery/v2/.../
 
 git-hooks:
 	echo "Installing hooks..." && \
