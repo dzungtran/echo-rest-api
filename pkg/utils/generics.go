@@ -1,19 +1,18 @@
 package utils
 
-// IsStringSliceContains -- check slice contain string
-// func Is[T any]SliceContains(itemSlice []T, searchItem T) bool {
-// 	for _, value := range itemSlice {
-// 		if value == searchItem {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
+import (
+	"golang.org/x/exp/constraints"
+)
 
-// IsStringSliceContains -- check slice contain string
-func IsStringSliceContains(stringSlice []string, searchString string) bool {
-	for _, value := range stringSlice {
-		if value == searchString {
+var (
+	IsStringSliceContains = IsSliceContains[string]
+	IsIntSliceContains    = IsSliceContains[int]
+	IsInt64SliceContains  = IsSliceContains[int64]
+)
+
+func IsSliceContains[T constraints.Ordered](itemSlice []T, searchItem T) bool {
+	for _, value := range itemSlice {
+		if value == searchItem {
 			return true
 		}
 	}

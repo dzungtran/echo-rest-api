@@ -25,6 +25,7 @@ require (
 	github.com/tidwall/sjson v1.2.4
 	go.uber.org/dig v1.14.1
 	go.uber.org/zap v1.21.0
+	golang.org/x/exp v0.0.0-20220428152302-39d4317da171
 )
 
 require (

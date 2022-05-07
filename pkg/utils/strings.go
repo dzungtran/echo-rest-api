@@ -65,16 +65,6 @@ func RemoveStringSliceContains(stringSlice []string, searchString string) []stri
 	return newData
 }
 
-// IsIntSliceContains -- check slice contain string
-func IsIntSliceContains(intSlice []int64, searchInt int64) bool {
-	for _, value := range intSlice {
-		if value == searchInt {
-			return true
-		}
-	}
-	return false
-}
-
 // StringSlice -- slice string by separate
 func StringSlice(s, sep string) []string {
 	var sl []string

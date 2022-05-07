@@ -21,12 +21,6 @@ func GetSHA256Hash(text string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-// func hash(salted string) string {
-// 	shaHash := sha512.New()
-// 	shaHash.Write([]byte(salted))
-// 	return string(shaHash.Sum(nil))
-// }
-
 // GetSHA512Hash -- get sha_512 hash from a string
 func GetSHA512Hash(text string) string {
 	shaHash := sha512.New()
