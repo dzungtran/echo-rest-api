@@ -1,0 +1,113 @@
+version: v0.9.0-alpha.3
+
+dsn: memory
+
+serve:
+  public:
+    base_url: http://127.0.0.1:8080/
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://127.0.0.1:3001
+      allowed_methods:
+        - GET
+        - OPTIONS
+        - PUT
+        - PATCH
+        - DELETE
+  admin:
+    base_url: http://kratos:4434/
+
+selfservice:
+  default_browser_return_url: http://127.0.0.1:8080/
+  whitelisted_return_urls:
+    - http://127.0.0.1:8080
+
+  methods:
+    password:
+      enabled: true
+
+  flows:
+    error:
+      ui_url: http://127.0.0.1:8080/auth/error
+
+    settings:
+      ui_url: http://127.0.0.1:8080/auth/settings
+      privileged_session_max_age: 15m
+      after:
+        hooks:
+          - hook: web_hook
+            config:
+              url: https://rest_api:8088/hooks/kratos/after-settings
+              method: POST # GET, DELETE, etc
+              body: file:///app/config/hooks/body.jsonnet
+              auth:
+                type: api_key
+                config: 
+                  name: X-Api-Key
+                  value: 200eb2fe06bab556972255cf2286a08783616183842d0
+                  in: header
+
+    recovery:
+      enabled: true
+      ui_url: http://127.0.0.1:8080/auth/recovery
+
+    verification:
+      enabled: true
+      ui_url: http://127.0.0.1:8080/auth/verification
+      after:
+        default_browser_return_url: http://127.0.0.1:8080/
+
+    logout:
+      after:
+        default_browser_return_url: http://127.0.0.1:8080/auth/login
+
+    login:
+      ui_url: http://127.0.0.1:8080/auth/login
+      lifespan: 10m
+
+    registration:
+      lifespan: 10m
+      ui_url: http://127.0.0.1:8080/auth/registration
+      after:
+        password:
+          hooks:
+            - hook: session
+            - hook: web_hook
+              config:
+                url: http://rest_api:8088/hooks/kratos/after-registration
+                method: POST # GET, DELETE, etc
+                body: file:///ory/kratos/config/hooks/body.jsonnet
+                auth:
+                  type: api_key
+                  config: 
+                    name: X-Api-Key
+                    #SELFSERVICE_FLOWS_REGISTRATION_AFTER_HOOKS_0_CONFIG_AUTH_CONFIG_VALUE
+                    value: 200eb2fe06bab556972255cf2286a08783616183842d0
+                    in: header
+
+log:
+  level: debug
+  format: text
+  leak_sensitive_values: true
+
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+  cipher:
+    - 32-LONG-SECRET-NOT-SECURE-AT-ALL
+
+ciphers:
+  algorithm: xchacha20-poly1305
+
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 8
+
+identity:
+  default_schema_url: file:///etc/config/kratos/identity.schema.json
+
+courier:
+  smtp:
+    connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true

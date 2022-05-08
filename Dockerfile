@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 
 RUN go mod tidy
-RUN go build -o appbin $APP_PATH
+RUN go build -o=appbin $APP_PATH
 
 
 # Deploy execute file to simple linux server

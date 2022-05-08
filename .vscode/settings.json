@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ory/kratos/master/.schema/version.schema.json": "file:///Users/dzungtran/codes/go/echo-rest-api/3rd-parties/kratos/kratos.yaml"
+    }
+}
