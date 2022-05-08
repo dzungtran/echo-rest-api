@@ -1,5 +1,5 @@
 # Load golang image to build
-FROM golang:1.17-alpine as builder
+FROM golang:1.18-alpine as builder
 ARG APP_PATH
 
 RUN mkdir -p /app
