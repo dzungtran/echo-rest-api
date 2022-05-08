@@ -1,4 +1,4 @@
-version: "3.0"
+version: "3.7"
 
 services:
   rest_api:
@@ -29,7 +29,9 @@ services:
       POSTGRES_USER: world
       POSTGRES_PASSWORD: hello
     volumes:
-      - ./init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+      - type: bind
+        source: ./3rd-parties/postgres-scripts
+        target: /docker-entrypoint-initdb.d/
     ports:
       - "5432:5432"
 
@@ -39,15 +41,19 @@ services:
       - backend
     depends_on:
       - postgres
+      - kratos-migrate
+    environment:
+      - DSN=postgres://world:hello@postgres:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
     volumes:
       - type: bind
         source: ./3rd-parties/kratos
-        target: /ory/kratos
+        target: /etc/config/kratos
+    command: serve -c /etc/config/kratos/kratos.yml --sqa-opt-out
+    ports:
+      - "4433:4433"
 
   kratos-migrate:
     image: oryd/kratos:v0.9.0-alpha.3
-    links:
-      - postgres:postgres
     environment:
       - DSN=postgres://world:hello@postgres:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
     networks:
@@ -63,19 +69,24 @@ services:
   kratos-selfservice-ui-node:
     image: oryd/kratos-selfservice-ui-node:latest
     environment:
-      - KRATOS_PUBLIC_URL=http://host.docker.internal:8080/ # For connectivity between containers
-      - KRATOS_BROWSER_URL=http://127.0.0.1:8080/
-      - ORY_SDK_URL=http://kratos:4433
+      - KRATOS_PUBLIC_URL=http://kratos:4433
+      - PORT=4455
+      - BASE_PATH=/
     networks:
       - backend
     depends_on:
       - kratos
+    ports:
+      - "4455:4455"
     restart: on-failure
 
   mailslurper:
     image: oryd/mailslurper:latest-smtps
     networks:
       - backend
+    ports:
+      - "4437:4437"
+      - "4436:4436"
 
   redis:
     image: redis:latest

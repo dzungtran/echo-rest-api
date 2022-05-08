@@ -4,12 +4,12 @@ dsn: memory
 
 serve:
   public:
-    base_url: http://127.0.0.1:8080/
+    base_url: http://127.0.0.1:4433/
     cors:
-      enabled: true
+      enabled: false
       allowed_origins:
-        - http://127.0.0.1:3000
         - http://127.0.0.1:4455
+        - http://127.0.0.1:4433
       allowed_methods:
         - GET
         - OPTIONS
@@ -20,9 +20,11 @@ serve:
     base_url: http://kratos:4434/
 
 selfservice:
-  default_browser_return_url: http://127.0.0.1:8080/
+  default_browser_return_url: http://127.0.0.1:4455/
   allowed_return_urls:
-    - http://127.0.0.1:8080
+    - http://127.0.0.1:4455
+    - http://127.0.0.1:4433
+    - http://kratos:4433
 
   methods:
     password:
@@ -30,16 +32,16 @@ selfservice:
 
   flows:
     error:
-      ui_url: http://127.0.0.1:8080/auth/error
+      ui_url: http://127.0.0.1:4455/error
 
     settings:
-      ui_url: http://127.0.0.1:8080/auth/settings
+      ui_url: http://127.0.0.1:4455/settings
       privileged_session_max_age: 15m
       after:
         hooks:
           - hook: web_hook
             config:
-              url: https://rest_api:8088/hooks/kratos/after-settings
+              url: http://rest_api:8088/hooks/kratos/after-settings
               method: POST # GET, DELETE, etc
               body: file:///app/config/hooks/body.jsonnet
               auth:
@@ -51,25 +53,25 @@ selfservice:
 
     recovery:
       enabled: true
-      ui_url: http://127.0.0.1:8080/auth/recovery
+      ui_url: http://127.0.0.1:4455/recovery
 
     verification:
       enabled: true
-      ui_url: http://127.0.0.1:8080/auth/verification
+      ui_url: http://127.0.0.1:4455/verification
       after:
-        default_browser_return_url: http://127.0.0.1:8080/
+        default_browser_return_url: http://127.0.0.1:4455/
 
     logout:
       after:
-        default_browser_return_url: http://127.0.0.1:8080/auth/login
+        default_browser_return_url: http://127.0.0.1:4455/login
 
     login:
-      ui_url: http://127.0.0.1:8080/auth/login
+      ui_url: http://127.0.0.1:4455/login
       lifespan: 10m
 
     registration:
       lifespan: 10m
-      ui_url: http://127.0.0.1:8080/auth/registration
+      ui_url: http://127.0.0.1:4455/registration
       after:
         password:
           hooks:

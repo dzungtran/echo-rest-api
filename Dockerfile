@@ -6,8 +6,8 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . .
 
-RUN go mod tidy
-RUN go build -o=appbin $APP_PATH
+RUN go mod download
+RUN go build -buildvcs=false -o=appbin $APP_PATH
 
 
 # Deploy execute file to simple linux server
