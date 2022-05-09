@@ -4,12 +4,12 @@ dsn: memory
 
 serve:
   public:
-    base_url: http://127.0.0.1:4433/
+    base_url: http://echo-rest.local:4433/
     cors:
       enabled: false
       allowed_origins:
-        - http://127.0.0.1:4455
-        - http://127.0.0.1:4433
+        - http://echo-rest.local:4455
+        - http://echo-rest.local:4433
       allowed_methods:
         - GET
         - OPTIONS
@@ -17,14 +17,17 @@ serve:
         - PATCH
         - DELETE
   admin:
-    base_url: http://kratos:4434/
+    base_url: http://echo-rest.local:4434/
+
+session:
+  cookie:
+    domain: echo-rest.local
 
 selfservice:
-  default_browser_return_url: http://127.0.0.1:4455/
+  default_browser_return_url: http://echo-rest.local:4455/
   allowed_return_urls:
-    - http://127.0.0.1:4455
-    - http://127.0.0.1:4433
-    - http://kratos:4433
+    - http://echo-rest.local:4455
+    - http://echo-rest.local:4433
 
   methods:
     password:
@@ -32,10 +35,10 @@ selfservice:
 
   flows:
     error:
-      ui_url: http://127.0.0.1:4455/error
+      ui_url: http://echo-rest.local:4455/error
 
     settings:
-      ui_url: http://127.0.0.1:4455/settings
+      ui_url: http://echo-rest.local:4455/settings
       privileged_session_max_age: 15m
       after:
         hooks:
@@ -43,35 +46,35 @@ selfservice:
             config:
               url: http://rest_api:8088/hooks/kratos/after-settings
               method: POST # GET, DELETE, etc
-              body: file:///app/config/hooks/body.jsonnet
+              body: file:///etc/config/kratos/config/hooks/body.jsonnet
               auth:
                 type: api_key
                 config: 
                   name: X-Api-Key
-                  value: 200eb2fe06bab556972255cf2286a08783616183842d0
+                  value: very-very-very-secure-api-key
                   in: header
 
     recovery:
       enabled: true
-      ui_url: http://127.0.0.1:4455/recovery
+      ui_url: http://echo-rest.local:4455/recovery
 
     verification:
       enabled: true
-      ui_url: http://127.0.0.1:4455/verification
+      ui_url: http://echo-rest.local:4455/verification
       after:
-        default_browser_return_url: http://127.0.0.1:4455/
+        default_browser_return_url: http://echo-rest.local:4455/
 
     logout:
       after:
-        default_browser_return_url: http://127.0.0.1:4455/login
+        default_browser_return_url: http://echo-rest.local:4455/login
 
     login:
-      ui_url: http://127.0.0.1:4455/login
+      ui_url: http://echo-rest.local:4455/login
       lifespan: 10m
 
     registration:
       lifespan: 10m
-      ui_url: http://127.0.0.1:4455/registration
+      ui_url: http://echo-rest.local:4455/registration
       after:
         password:
           hooks:
@@ -80,13 +83,13 @@ selfservice:
               config:
                 url: http://rest_api:8088/hooks/kratos/after-registration
                 method: POST # GET, DELETE, etc
-                body: file:///ory/kratos/config/hooks/body.jsonnet
+                body: file:///etc/config/kratos/config/hooks/body.jsonnet
                 auth:
                   type: api_key
                   config: 
                     name: X-Api-Key
                     #SELFSERVICE_FLOWS_REGISTRATION_AFTER_HOOKS_0_CONFIG_AUTH_CONFIG_VALUE
-                    value: 200eb2fe06bab556972255cf2286a08783616183842d0
+                    value: very-very-very-secure-api-key
                     in: header
 
 log:

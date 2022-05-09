@@ -48,7 +48,7 @@ services:
       - type: bind
         source: ./3rd-parties/kratos
         target: /etc/config/kratos
-    command: serve -c /etc/config/kratos/kratos.yml --sqa-opt-out
+    command: serve -c /etc/config/kratos/kratos.yml --sqa-opt-out --dev
     ports:
       - "4433:4433"
 
@@ -68,8 +68,10 @@ services:
 
   kratos-selfservice-ui-node:
     image: oryd/kratos-selfservice-ui-node:latest
+    links:
+      - "kratos:echo-rest.local"
     environment:
-      - KRATOS_PUBLIC_URL=http://kratos:4433
+      - KRATOS_PUBLIC_URL=http://echo-rest.local:4433
       - PORT=4455
       - BASE_PATH=/
     networks:
