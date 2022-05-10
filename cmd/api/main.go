@@ -7,13 +7,13 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/dzungtran/echo-rest-api/cmd/api/di"
 	"github.com/dzungtran/echo-rest-api/config"
 	"github.com/dzungtran/echo-rest-api/infrastructure/datastore"
 	"github.com/dzungtran/echo-rest-api/migrations"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {

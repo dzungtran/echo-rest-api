@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
 	"github.com/dzungtran/echo-rest-api/delivery/requests"
 	"github.com/dzungtran/echo-rest-api/delivery/wrapper"
 	"github.com/dzungtran/echo-rest-api/domains"
@@ -18,6 +16,8 @@ import (
 	"github.com/dzungtran/echo-rest-api/pkg/middlewares"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/dzungtran/echo-rest-api/usecases"
+	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 )
 
 type OrgHandler struct {

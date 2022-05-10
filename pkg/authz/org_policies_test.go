@@ -3,8 +3,8 @@ package authz
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/dzungtran/echo-rest-api/domains"
+	"github.com/stretchr/testify/assert"
 )
 
 var (

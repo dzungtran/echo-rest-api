@@ -4,15 +4,15 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/jinzhu/copier"
-	"github.com/labstack/echo/v4"
-	"github.com/tidwall/gjson"
 	"github.com/dzungtran/echo-rest-api/delivery/requests"
 	"github.com/dzungtran/echo-rest-api/delivery/wrapper"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/middlewares"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/dzungtran/echo-rest-api/usecases"
+	"github.com/jinzhu/copier"
+	"github.com/labstack/echo/v4"
+	"github.com/tidwall/gjson"
 )
 
 type KratosHookHandler struct {

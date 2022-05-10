@@ -3,11 +3,11 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
-	ory "github.com/ory/kratos-client-go"
 	"github.com/dzungtran/echo-rest-api/domains"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
+	"github.com/labstack/echo/v4"
+	ory "github.com/ory/kratos-client-go"
 )
 
 func (m *MiddlewareManager) KratosWebhookAuth(next echo.HandlerFunc) echo.HandlerFunc {

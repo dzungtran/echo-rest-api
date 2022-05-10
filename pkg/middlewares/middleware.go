@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
-	ory "github.com/ory/kratos-client-go"
 	"github.com/dzungtran/echo-rest-api/config"
 	"github.com/dzungtran/echo-rest-api/delivery/defines"
 	"github.com/dzungtran/echo-rest-api/domains"
@@ -14,6 +12,8 @@ import (
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/dzungtran/echo-rest-api/repositories/postgres"
+	"github.com/labstack/echo/v4"
+	ory "github.com/ory/kratos-client-go"
 )
 
 // MiddlewareManager ...

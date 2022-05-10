@@ -1,8 +1,8 @@
 package postgres
 
 import (
-	"github.com/jmoiron/sqlx"
 	"github.com/dzungtran/echo-rest-api/infrastructure/datastore"
+	"github.com/jmoiron/sqlx"
 )
 
 func NewSqlxTransaction(mdbi *datastore.MasterDbInstance) *SqlxTransaction {

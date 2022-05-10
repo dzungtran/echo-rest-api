@@ -3,13 +3,13 @@ package usecases
 import (
 	"context"
 
-	"github.com/jinzhu/copier"
 	"github.com/dzungtran/echo-rest-api/delivery/defines"
 	"github.com/dzungtran/echo-rest-api/delivery/requests"
 	"github.com/dzungtran/echo-rest-api/domains"
 	"github.com/dzungtran/echo-rest-api/pkg/cue"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/dzungtran/echo-rest-api/repositories/postgres"
+	"github.com/jinzhu/copier"
 )
 
 // UserUsecase represent the user's usecase contract

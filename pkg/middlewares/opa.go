@@ -3,9 +3,9 @@ package middlewares
 import (
 	"errors"
 
-	"github.com/labstack/echo/v4"
 	"github.com/dzungtran/echo-rest-api/domains"
 	"github.com/dzungtran/echo-rest-api/pkg/authz"
+	"github.com/labstack/echo/v4"
 )
 
 // Dểpcated: Call in handlers
