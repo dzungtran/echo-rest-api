@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "Running Gofmt"
+gofmt -s -w .
+
 echo "Running pre-commit hook"
 ./tools/scripts/run-tests.sh
 
