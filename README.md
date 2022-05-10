@@ -6,7 +6,30 @@ A Golang restful API boilerplate based on Echo framework v4. Includes tools for 
 
 ## Overview
 
-## Credits
+![Request processing flow - Sequence Diagram](out/docs/diagrams/overview/request_flow.svg)
+
+## Used libraries:
+
+- labstack/echo 
+- open-policy-agent/opa 
+- uber-go/dig
+- spf13/cobra 
+- jackc/pgx 
+- ory/kratos
+- golang-migrate/migrate
+
+## Features
+
+- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password) use Ory/Kratos
+- [x] REST API
+- [x] DB Migration
+- [x] Configs via environmental variables
+- [x] Unit tests
+- [x] Dependency injection
+- [x] Role based access control (use Open Policy Agent)
+- [x] Module generation, quickly create model, usecase, api handler
+
+## Refs
 
 ## TODOs
 
