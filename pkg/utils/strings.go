@@ -112,33 +112,42 @@ func ToScreamingDelimited(s string, del uint8, screaming bool) string {
 		// treat acronyms as words, eg for JSONData -> JSON is a whole word
 		nextCaseIsChanged := false
 		if i+1 < len(s) {
-			next := s[i+1]
-			if (v >= 'A' && v <= 'Z' && next >= 'a' && next <= 'z') || (v >= 'a' && v <= 'z' && next >= 'A' && next <= 'Z') {
-				nextCaseIsChanged = true
-			}
+			next := rune(s[i+1])
+			nextCaseIsChanged = (isRuneInRange(v, 'A', 'Z') && isRuneInRange(next, 'a', 'z')) ||
+				(isRuneInRange(v, 'a', 'z') && isRuneInRange(next, 'A', 'Z'))
 		}
 
 		if i > 0 && n[len(n)-1] != del && nextCaseIsChanged {
 			// add underscore if next letter case type is changed
-			if v >= 'A' && v <= 'Z' {
+			if isRuneInRange(v, 'A', 'Z') {
 				n += string(del) + string(v)
-			} else if v >= 'a' && v <= 'z' {
+			}
+
+			if isRuneInRange(v, 'a', 'z') {
 				n += string(v) + string(del)
 			}
-		} else if v == ' ' || v == '_' || v == '-' {
+			continue
+		}
+
+		if v == ' ' || v == '_' || v == '-' {
 			// replace spaces/underscores with delimiters
 			n += string(del)
-		} else {
-			n = n + string(v)
+			continue
 		}
+
+		n = n + string(v)
 	}
 
+	n = strings.ToLower(n)
 	if screaming {
 		n = strings.ToUpper(n)
-	} else {
-		n = strings.ToLower(n)
 	}
+
 	return n
+}
+
+func isRuneInRange(chr rune, fromRune rune, toRune rune) bool {
+	return chr >= fromRune && chr <= toRune
 }
 
 // UcFirst Upper case first character

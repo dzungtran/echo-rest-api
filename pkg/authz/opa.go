@@ -205,24 +205,6 @@ func CheckPolicies(user *domains.UserWithRoles, callOpts ...CallOPAInputOption) 
 		"user": user,
 	}
 
-	// Apply options to input
-	if opts.RequestMethod != "" && opts.RequestEndpoint != "" {
-		input["method"] = opts.RequestMethod
-		input["endpoint"] = opts.RequestEndpoint
-	}
-
-	if len(opts.ExtraData) > 0 {
-		for k, v := range opts.ExtraData {
-			input[k] = v
-		}
-	}
-
-	// Apply options to input
-	if opts.RequestMethod != "" && opts.RequestEndpoint != "" {
-		input["method"] = opts.RequestMethod
-		input["endpoint"] = opts.RequestEndpoint
-	}
-
 	if opts.Org != nil {
 		input["org"] = opts.Org
 	}
@@ -231,6 +213,12 @@ func CheckPolicies(user *domains.UserWithRoles, callOpts ...CallOPAInputOption) 
 		for k, v := range opts.ExtraData {
 			input[k] = v
 		}
+	}
+
+	// Apply options to input
+	if opts.RequestMethod != "" && opts.RequestEndpoint != "" {
+		input["method"] = opts.RequestMethod
+		input["endpoint"] = opts.RequestEndpoint
 	}
 
 	// Run evaluation.
