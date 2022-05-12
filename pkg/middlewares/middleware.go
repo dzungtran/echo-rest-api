@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/dzungtran/echo-rest-api/config"
 	"github.com/dzungtran/echo-rest-api/delivery/defines"
@@ -69,7 +70,7 @@ func (m *MiddlewareManager) Auth() echo.MiddlewareFunc {
 
 			u, err := m.fetchUserFromAuth(ctx, "", email)
 			if err != nil {
-				logger.Log().Errorw("error while fetch user for auth", "email", email, "error", err)
+				logger.Log().Errorw("error while fetch user for auth", "email", strings.ReplaceAll(email, "\n", ""), "error", err)
 				return c.JSON(http.StatusUnauthorized, map[string]interface{}{
 					"message": "cannot fetch user",
 				})
