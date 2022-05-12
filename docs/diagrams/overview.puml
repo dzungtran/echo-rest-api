@@ -32,7 +32,7 @@ dashboard -> authn_midd: Send requests (include session cookies)
 activate authn_midd
 authn_midd -> authn_api: Request identity info
 activate authn_api
-authn_api -> authn_midd: Retrieve identity infomation
+authn_api -> authn_midd: Retrieve identity information
 deactivate authn_api
 note right: If retrieve identity info \nthen query user info from DB by email\nand set it to request context
 authn_midd -> authz_opa: Continue
