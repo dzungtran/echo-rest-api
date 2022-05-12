@@ -25,7 +25,6 @@ services:
       - backend
     environment:
       POSTGRES_DB: echo_rest_api
-      # Please update db user in postgres init script 
       POSTGRES_USER: world
       POSTGRES_PASSWORD: hello
     volumes:

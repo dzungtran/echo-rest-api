@@ -5,7 +5,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/dzungtran/echo-rest-api/domains"
@@ -16,6 +15,7 @@ import (
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage/inmem"
 	"github.com/open-policy-agent/opa/util"
+	"github.com/sirupsen/logrus"
 	"github.com/tidwall/sjson"
 )
 
@@ -59,24 +59,24 @@ func init() {
 	// Compile the module. The keys are used as identifiers in error messages.
 	compiler, err := ast.CompileModules(regoContents)
 	if err != nil {
-		log.Fatalf("error while init rego compiler, details: %s", err.Error())
+		logrus.Fatalf("error while init rego compiler, details: %s", err.Error())
 	}
 
 	var jsonData map[string]interface{}
 	var routesData map[string]interface{}
 	err = util.UnmarshalJSON(routesFile, &routesData)
 	if err != nil {
-		log.Fatalf("error while init rego instance, details: %s", err.Error())
+		logrus.Fatalf("error while init rego instance, details: %s", err.Error())
 	}
 
 	dataFile, err = sjson.SetBytes(dataFile, "endpoints_acl", routesData)
 	if err != nil {
-		log.Fatalf("error while build data file, details: %s", err.Error())
+		logrus.Fatalf("error while build data file, details: %s", err.Error())
 	}
 
 	err = util.UnmarshalJSON(dataFile, &jsonData)
 	if err != nil {
-		log.Fatalf("error while init rego instance, details: %s", err.Error())
+		logrus.Fatalf("error while init rego instance, details: %s", err.Error())
 	}
 
 	// Manually create the storage layer. inmem.NewFromObject returns an
@@ -109,7 +109,7 @@ func init() {
 func readRegoFiles(dfs embed.FS, folderName string, filesContent map[string]string) {
 	dirs, err := dfs.ReadDir(folderName)
 	if err != nil {
-		log.Fatalf("error while init rego compiler, details: %s", err.Error())
+		logrus.Fatalf("error while init rego compiler, details: %s", err.Error())
 	}
 
 	for _, d := range dirs {
