@@ -3,9 +3,6 @@ language: go
 go:
 - 1.18.1
 
-env:
-- GO111MODULE=on
-
 script:
 - go test -v ./... -coverprofile=coverage.txt -covermode=atomic
 
