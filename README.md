@@ -13,6 +13,17 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 ![Request processing flow - Sequence Diagram](out/docs/diagrams/overview/request_flow.svg)
 
+## Features
+
+- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password) using Ory/Kratos
+- [x] REST API
+- [x] DB Migration
+- [x] Configs via environmental variables
+- [x] Unit tests
+- [x] Dependency injection
+- [x] Role based access control (using Open Policy Agent)
+- [x] Module generation, quickly create model, usecase, api handler
+
 ## Used libraries:
 
 - labstack/echo 
@@ -86,17 +97,6 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 │   └── scripts         # Some helpful bash commands
 └── usecases
 ```
-
-## Features
-
-- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password) using Ory/Kratos
-- [x] REST API
-- [x] DB Migration
-- [x] Configs via environmental variables
-- [x] Unit tests
-- [x] Dependency injection
-- [x] Role based access control (using Open Policy Agent)
-- [x] Module generation, quickly create model, usecase, api handler
 
 ## Open source refs
 - https://www.ory.sh/docs/kratos/self-service
