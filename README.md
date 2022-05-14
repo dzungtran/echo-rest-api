@@ -42,46 +42,35 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 
 ```
 .
-├── 3rd-parties
-│   ├── kratos
-│   └── postgres-scripts
+├── 3rd-parties         # Thirdparty configs
 ├── cmd
-│   └── api
-├── config
+│   └── api             # Main package of API service
+├── config              # Application configs struct
 ├── delivery
 │   ├── defines
 │   ├── http
 │   ├── requests
-│   └── wrapper
-├── docs
-│   └── diagrams
+│   ...        
+├── docs                # Content documentation and PlantUML for charts and diagrams
 ├── domains
 ├── infrastructure
-│   └── datastore
 ├── migrations
-│   └── sql
-├── out
-│   └── docs
+│   └── sql             # Migration files
+├── out                 # Output folder of PlantUML
 ├── pkg
-│   ├── authz
-│   ├── certs
+│   ├── authz           # Contents Rego rule files for RBAC
 │   ├── constants
-│   ├── cue
-│   ├── hook
-│   ├── hook-subscriber
-│   ├── kratos
-│   ├── logger
-│   ├── middlewares
-│   ├── sql-tools
-│   └── utils
+│   ├── cue             # Contents cue files for data validation
+│   ...
+│   └── utils           # Contents helper functions
 ├── repositories
 │   ├── postgres
 │   └── redis
 ├── tests
 ├── tools
-│   ├── modtool
-│   ├── routes
-│   └── scripts
+│   ├── modtool         # Module generation
+│   ├── routes          # Generate routes file for Authorization
+│   └── scripts         # Some helpful bash commands
 └── usecases
 ```
 
