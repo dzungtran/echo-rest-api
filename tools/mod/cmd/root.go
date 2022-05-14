@@ -8,7 +8,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "wetools",
+	Use:   "mod",
 	Short: "A simple tool to quickly generate component codes.",
 	Long:  `A simple tool to quickly generate component codes.`,
 	// Uncomment the following line if your bare application

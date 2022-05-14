@@ -37,7 +37,7 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 - [x] Role based access control (using Open Policy Agent)
 - [x] Module generation, quickly create model, usecase, api handler
 
-## Used libraries:
+## Used libraries
 
 - labstack/echo 
 - open-policy-agent/opa 
@@ -70,7 +70,7 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | `make build-api`                         | Build application binary                                    |
 | `make setup`                             | Run commands to setup development env                       |
 | `make run-db`                            | Run DB docker container on local                            |
-| `make modgen`                            | Generate module component codes.                            |
+| `make mod`                            | Generate module component codes.                            |
 | `make migration-create [migration_name]` | Create migration files. migration_name should be snake case |
 | `make git-hooks`                         | Setup git hooks                                             |
 | `make routes`                            | Generate routes file for authorization                      |

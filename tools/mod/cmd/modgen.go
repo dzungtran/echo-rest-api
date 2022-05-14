@@ -11,7 +11,7 @@ import (
 	"text/template"
 
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
-	"github.com/dzungtran/echo-rest-api/tools/modtool/cmd/modgen"
+	"github.com/dzungtran/echo-rest-api/tools/mod/cmd/modgen"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -51,7 +51,7 @@ var (
 
 // modgenCmd represents the modgen command
 var modgenCmd = &cobra.Command{
-	Use:   "modgen",
+	Use:   "gen",
 	Short: "Generate module codes from template files",
 	Long:  `Generate module codes from template files.`,
 	Args: func(cmd *cobra.Command, args []string) error {
