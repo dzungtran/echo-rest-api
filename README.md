@@ -2,11 +2,12 @@
 [![codecov](https://codecov.io/gh/dzungtran/echo-rest-api/branch/main/graph/badge.svg?token=hxaHIVyoBN)](https://codecov.io/gh/dzungtran/echo-rest-api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/dzungtran/echo-rest-api/blob/master/LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/dzungtran/echo-rest-api.svg)](https://pkg.go.dev/github.com/dzungtran/echo-rest-api)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dzungtran/echo-rest-api)](https://goreportcard.com/report/github.com/dzungtran/echo-rest-api)
+[![GoReportCard Badge](https://goreportcard.com/badge/github.com/dzungtran/echo-rest-api)](https://goreportcard.com/report/github.com/dzungtran/echo-rest-api)
 
-# Echo Rest API boilerplate
+# Echo REST API boilerplate
 
 A Golang restful API boilerplate based on Echo framework v4. Includes tools for module generation, db migration, authorization, authentication and more.
+Any feedback and pull requests are welcome and highly appreciated. Feel free to open issues just for comments and discussions.
 
 ## Overview
 
@@ -22,18 +23,84 @@ A Golang restful API boilerplate based on Echo framework v4. Includes tools for 
 - ory/kratos
 - golang-migrate/migrate
 
+## Environment variables
+
+By default, when you run application with `make run-api` command, it will look at $HOME/.env for exporting environment variabels.
+Setting your config as Environment Variables is recommended as by 12-Factor App.
+
+| Name                   | Type    | Description                                                      | Example value                                 |
+|------------------------|---------|------------------------------------------------------------------|-----------------------------------------------|
+| DATABASE_URL           | string  | Data source URL for main DB                                      | postgres://world:hello@postgres/echo_rest_api |
+| KRATOS_API_ENDPOINT    | string  | Public endpoint of Kratos                                        | http://kratos:4433/                           |
+| KRATOS_WEBHOOK_API_KEY | string  | Api key for Kratos integration                                   | very-very-very-secure-api-key                 |
+| PORT                   | integer | Http port (accepts also port number only for heroku compability) | 8088                                          |
+| AUTO_MIGRATE           | boolean | Enable run migration every time the application starts           | true                                          |
+| ENV                    | string  | Environment name                                                 | development                                   |
+| REDIS_URL              | string  | Optional                                                         | redis://redis:6379                            |
+
+## Folder struct
+
+```
+.
+├── 3rd-parties
+│   ├── kratos
+│   └── postgres-scripts
+├── cmd
+│   └── api
+├── config
+├── delivery
+│   ├── defines
+│   ├── http
+│   ├── requests
+│   └── wrapper
+├── docs
+│   └── diagrams
+├── domains
+├── infrastructure
+│   └── datastore
+├── migrations
+│   └── sql
+├── out
+│   └── docs
+├── pkg
+│   ├── authz
+│   ├── certs
+│   ├── constants
+│   ├── cue
+│   ├── hook
+│   ├── hook-subscriber
+│   ├── kratos
+│   ├── logger
+│   ├── middlewares
+│   ├── sql-tools
+│   └── utils
+├── repositories
+│   ├── postgres
+│   └── redis
+├── tests
+├── tools
+│   ├── modtool
+│   ├── routes
+│   └── scripts
+└── usecases
+```
+
 ## Features
 
-- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password) use Ory/Kratos
+- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password) using Ory/Kratos
 - [x] REST API
 - [x] DB Migration
 - [x] Configs via environmental variables
 - [x] Unit tests
 - [x] Dependency injection
-- [x] Role based access control (use Open Policy Agent)
+- [x] Role based access control (using Open Policy Agent)
 - [x] Module generation, quickly create model, usecase, api handler
 
-## Refs
+## Open source refs
+- https://www.ory.sh/docs/kratos/self-service
+- https://cuelang.org/docs/about/
+- https://www.openpolicyagent.org/docs/latest/
+- https://echo.labstack.com/guide/
 
 ## TODOs
 
