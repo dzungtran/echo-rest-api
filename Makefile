@@ -37,7 +37,7 @@ git-hooks:
 	chmod +x .git/hooks/pre-commit && \
 	echo "Done!"
 
-tools:
+modgen:
 	go run ./tools/modtool/
 
 routes:

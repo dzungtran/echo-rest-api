@@ -107,6 +107,6 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 ## TODOs
 
 - [x] Update docker compose for ory/kratos
-- [ ] Update README.md
+- [x] Update README.md
 - [ ] Write more tests
 - [ ] Add support Heroku
