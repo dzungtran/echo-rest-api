@@ -9,6 +9,19 @@
 A Golang restful API boilerplate based on Echo framework v4. Includes tools for module generation, db migration, authorization, authentication and more.
 Any feedback and pull requests are welcome and highly appreciated. Feel free to open issues just for comments and discussions.
 
+<!--toc-->
+- [Echo REST API boilerplate](#echo-rest-api-boilerplate)
+    * [Overview](#overview)
+    * [Features](#features)
+    * [Used libraries:](#used-libraries)
+    * [Environment variables](#environment-variables)
+    * [Commands](#commands)
+    * [Folder structure](#folder-structure)
+    * [Open source refs](#open-source-refs)
+    * [TODOs](#todos)
+
+<!-- tocstop -->
+
 ## Overview
 
 ![Request processing flow - Sequence Diagram](out/docs/diagrams/overview/request_flow.svg)
