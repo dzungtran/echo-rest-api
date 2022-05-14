@@ -38,7 +38,20 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | ENV                    | string  | Environment name                                                 | development                                   |
 | REDIS_URL              | string  | Optional                                                         | redis://redis:6379                            |
 
-## Folder struct
+## Commands
+
+| Command                                  | Description                                                 |
+|------------------------------------------|-------------------------------------------------------------|
+| `make run-api`                           | Start REST API application                                  |
+| `make build-api`                         | Build application binary                                    |
+| `make setup`                             | Run commands to setup development env                       |
+| `make run-db`                            | Run DB docker container on local                            |
+| `make modgen`                            | Generate module component codes.                            |
+| `make migration-create [migration_name]` | Create migration files. migration_name should be snake case |
+| `make git-hooks`                         | Setup git hooks                                             |
+| `make routes`                            | Generate routes file for authorization                      |
+
+## Folder structure
 
 ```
 .
