@@ -9,14 +9,14 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/dzungtran/echo-rest-api/delivery/requests"
-	"github.com/dzungtran/echo-rest-api/delivery/wrapper"
-	"github.com/dzungtran/echo-rest-api/domains"
-	"github.com/dzungtran/echo-rest-api/pkg/authz"
-	"github.com/dzungtran/echo-rest-api/pkg/constants"
-	"github.com/dzungtran/echo-rest-api/pkg/middlewares"
-	"github.com/dzungtran/echo-rest-api/pkg/utils"
-	"github.com/dzungtran/echo-rest-api/usecases"
+	"{{ .RootPackage }}/delivery/requests"
+	"{{ .RootPackage }}/delivery/wrapper"
+	"{{ .RootPackage }}/domains"
+	"{{ .RootPackage }}/pkg/authz"
+	"{{ .RootPackage }}/pkg/constants"
+	"{{ .RootPackage }}/pkg/middlewares"
+	"{{ .RootPackage }}/pkg/utils"
+	"{{ .RootPackage }}/usecases"
 )
 
 type {{ .ModuleName }}Handler struct {

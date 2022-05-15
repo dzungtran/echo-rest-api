@@ -6,10 +6,10 @@ import (
 	"context"
 
 	"github.com/jinzhu/copier"
-	"github.com/dzungtran/echo-rest-api/delivery/defines"
-	"github.com/dzungtran/echo-rest-api/delivery/requests"
-	"github.com/dzungtran/echo-rest-api/domains"
-	"github.com/dzungtran/echo-rest-api/repositories/postgres"
+	"{{ .RootPackage }}/delivery/defines"
+	"{{ .RootPackage }}/delivery/requests"
+	"{{ .RootPackage }}/domains"
+	"{{ .RootPackage }}/repositories/postgres"
 )
 
 // {{ .ModuleName }}Usecase represent the {{ .ModuleName | ToLowerCamel }}'s usecase contract

@@ -14,6 +14,7 @@ import (
 	"github.com/dzungtran/echo-rest-api/tools/mod/cmd/modgen"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 )
 
 type (
@@ -24,16 +25,22 @@ type (
 		SkipUseCase bool
 	}
 	modgenTplVars struct {
-		ModuleName string
+		ModuleName  string
+		RootPackage string
+	}
+	modConfigs struct {
+		RootPackage string `yaml:"RootPackage"`
 	}
 )
 
 const (
 	defaultFlagCodeGen = "// Auto generate"
+	configFile         = ".modgen.yaml"
 )
 
 var (
 	mgOpts       = &modGenOpts{}
+	cnf          = &modConfigs{}
 	digFilePaths = map[string]string{
 		"usecases/dig.go":              `_ = container.Provide(New{{ .ModuleName }}Usecase)`,
 		"repositories/postgres/dig.go": `_ = container.Provide(NewPgsql{{ .ModuleName }}Repository)`,
@@ -67,8 +74,21 @@ var modgenCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		yamlFile, err := ioutil.ReadFile(configFile)
+		if err != nil {
+			return err
+		}
+
+		err = yaml.Unmarshal(yamlFile, cnf)
+		if err != nil {
+			return err
+		}
+
 		tpls := modgen.GetModGenTemplates()
-		tVars := modgenTplVars{ModuleName: mgOpts.Name}
+		tVars := modgenTplVars{
+			ModuleName:  mgOpts.Name,
+			RootPackage: cnf.RootPackage,
+		}
 		tplDir := "templates"
 
 		tplFiles, err := tpls.ReadDir(tplDir)
@@ -223,7 +243,7 @@ func runGenerateRoutes() {
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	logrus.Info("Run: ", string(out.Bytes()))
+	logrus.Info("Run: ", out.String())
 }
 
 func init() {

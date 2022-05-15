@@ -37,21 +37,7 @@ git-hooks:
 	chmod +x .git/hooks/pre-commit && \
 	echo "Done!"
 
-tools:
-	go run ./tools/mod/
-
 routes:
 	go run ./tools/routes/
 
-.PHONY:
-	migration-create
-	migration-up
-	migration-down
-	run-api
-	run-db
-	build-api
-	test
-	mock
-	setup
-	tools
-	routes
+.PHONY: routes run-api run-db build-api migration-create

@@ -9,12 +9,12 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
-	"github.com/dzungtran/echo-rest-api/delivery/defines"
-	"github.com/dzungtran/echo-rest-api/domains"
-	"github.com/dzungtran/echo-rest-api/infrastructure/datastore"
-	"github.com/dzungtran/echo-rest-api/pkg/constants"
-	sql_tools "github.com/dzungtran/echo-rest-api/pkg/sql-tools"
-	"github.com/dzungtran/echo-rest-api/pkg/utils"
+	"{{ .RootPackage }}/delivery/defines"
+	"{{ .RootPackage }}/domains"
+	"{{ .RootPackage }}/infrastructure/datastore"
+	"{{ .RootPackage }}/pkg/constants"
+	sql_tools "{{ .RootPackage }}/pkg/sql-tools"
+	"{{ .RootPackage }}/pkg/utils"
 )
 
 const (

@@ -1,5 +1,5 @@
 @startuml request_flow
-title Echo rest API sequence diagram
+title Echo REST API sequence diagram
 
 autonumber
 skinparam maxMessageSize 100
@@ -9,7 +9,7 @@ participant "Login Screen\n" as login_scr
 participant "Dashboard\n" as dashboard
 participant "Auth API\n(Kratos Server)" as authn_api
 
-box "Echo rest API"
+box "Echo REST API"
 participant "Authn middleware\n(Kratos Client)" as authn_midd
 participant "Authz\n(OPA)" as authz_opa
 participant "API Handlers\n" as api_handlers

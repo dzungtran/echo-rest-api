@@ -13,11 +13,12 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 - [Echo REST API boilerplate](#echo-rest-api-boilerplate)
     * [Overview](#overview)
     * [Features](#features)
-    * [Used libraries:](#used-libraries)
+    * [Running the project](#running-the-project)
     * [Environment variables](#environment-variables)
     * [Commands](#commands)
     * [Folder structure](#folder-structure)
     * [Open source refs](#open-source-refs)
+    * [Contributing](#contributing)
     * [TODOs](#todos)
 
 <!-- tocstop -->
@@ -28,29 +29,31 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 ## Features
 
-- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password) using Ory/Kratos
-- [x] REST API
-- [x] DB Migration
-- [x] Configs via environmental variables
-- [x] Unit tests
-- [x] Dependency injection
-- [x] Role based access control (using Open Policy Agent)
-- [x] Module generation, quickly create model, usecase, api handler
+- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password, 2FA) using [Ory/Kratos](https://github.com/ory/kratos).
+- [x] REST API using [labstack/echo](https://github.com/labstack/echo).
+- [x] DB Migration using [golang-migrate/migrate](https://github.com/golang-migrate/migrate).
+- [x] Configs via environmental variables.
+- [x] Unit tests.
+- [x] Dependency injection using [uber-go/dig](https://github.com/uber-go/dig).
+- [x] Role based access control using [Open Policy Agent](https://github.com/open-policy-agent/opa).
+- [x] Module generation, quickly create model, usecase, api handler.
+- CLI support. try: `make tools` using [spf13/cobra](https://github.com/spf13/cobra).
 
-## Used libraries
+## Running the project
 
-- labstack/echo 
-- open-policy-agent/opa 
-- uber-go/dig
-- spf13/cobra 
-- jackc/pgx 
-- ory/kratos
-- golang-migrate/migrate
+- Make sure you have docker installed.
+- Copy `.env.example` to `.env.docker`
+- Add a new line `127.0.0.1	echo-rest.local` to `/etc/hosts` file.
+- Run `docker compose up -d`.
+- Go to `localhost:8088` to verify if the server works.
 
 ## Environment variables
 
-By default, when you run application with `make run-api` command, it will look at $HOME/.env for exporting environment variabels.
+By default, when you run application with `make run-api` command, it will look at `$HOME/.env` for exporting environment variabels.
 Setting your config as Environment Variables is recommended as by 12-Factor App.
+
+<details>
+    <summary>Variables Defined in the project </summary>
 
 | Name                   | Type    | Description                                                      | Example value                                 |
 |------------------------|---------|------------------------------------------------------------------|-----------------------------------------------|
@@ -62,6 +65,8 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | ENV                    | string  | Environment name                                                 | development                                   |
 | REDIS_URL              | string  | Optional                                                         | redis://redis:6379                            |
 
+</details>
+
 ## Commands
 
 | Command                                  | Description                                                 |
@@ -70,7 +75,7 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | `make build-api`                         | Build application binary                                    |
 | `make setup`                             | Run commands to setup development env                       |
 | `make run-db`                            | Run DB docker container on local                            |
-| `make mod`                            | Generate module component codes.                            |
+| `go run ./tools/mod/ gen`                | Generate module component codes.                            |
 | `make migration-create [migration_name]` | Create migration files. migration_name should be snake case |
 | `make git-hooks`                         | Setup git hooks                                             |
 | `make routes`                            | Generate routes file for authorization                      |
@@ -117,9 +122,16 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 - https://www.openpolicyagent.org/docs/latest/
 - https://echo.labstack.com/guide/
 
+
+## Contributing
+
+Please open issues if you want the template to add some features that is not in todos.
+
+Create a PR with relevant information if you want to contribute in this template.
+
 ## TODOs
 
-- [x] Update docker compose for ory/kratos
-- [x] Update README.md
-- [ ] Write more tests
-- [ ] Add support Heroku
+- [x] Update docker compose for ory/kratos.
+- [x] Update README.md.
+- [ ] Write more tests.
+- [ ] Add support Heroku.

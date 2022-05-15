@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Running Gofmt"
+echo "Running gofmt"
 gofmt -s -w .
 
 echo "Running pre-commit hook"
