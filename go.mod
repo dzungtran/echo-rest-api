@@ -6,7 +6,7 @@ require (
 	cuelang.org/go v0.4.3
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/Masterminds/squirrel v1.5.2
-	github.com/go-playground/validator/v10 v10.10.1
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/jackc/pgx/v4 v4.16.0
@@ -24,6 +24,7 @@ require (
 	github.com/tidwall/sjson v1.2.4
 	go.uber.org/dig v1.14.1
 	go.uber.org/zap v1.21.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -82,6 +83,5 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220414192740-2d67ff6cf2b4 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
