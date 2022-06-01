@@ -16,7 +16,7 @@ require (
 	github.com/lib/pq v1.10.5
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/open-policy-agent/opa v0.40.0
-	github.com/ory/kratos-client-go v0.9.0-alpha.3
+	github.com/ory/kratos-client-go v0.10.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1
@@ -24,6 +24,7 @@ require (
 	github.com/tidwall/sjson v1.2.4
 	go.uber.org/dig v1.14.1
 	go.uber.org/zap v1.21.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -82,6 +83,5 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220414192740-2d67ff6cf2b4 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
