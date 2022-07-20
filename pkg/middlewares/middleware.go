@@ -6,13 +6,15 @@ import (
 	"strings"
 
 	"github.com/dzungtran/echo-rest-api/config"
-	"github.com/dzungtran/echo-rest-api/delivery/defines"
-	"github.com/dzungtran/echo-rest-api/domains"
+	"github.com/dzungtran/echo-rest-api/modules/core/domains"
+	coreRepo "github.com/dzungtran/echo-rest-api/modules/core/repositories"
+	projectRepo "github.com/dzungtran/echo-rest-api/modules/projects/repositories"
+	"github.com/dzungtran/echo-rest-api/pkg/authz"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
+	"github.com/dzungtran/echo-rest-api/pkg/contexts"
 	"github.com/dzungtran/echo-rest-api/pkg/kratos"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
-	"github.com/dzungtran/echo-rest-api/repositories/postgres"
 	"github.com/labstack/echo/v4"
 	ory "github.com/ory/kratos-client-go"
 )
@@ -21,41 +23,32 @@ import (
 // This file contains common functions for auth
 type MiddlewareManager struct {
 	appConf      *config.AppConfig
-	userRepo     postgres.UserRepository
-	userOrgRepo  postgres.UserOrgRepository
+	userRepo     coreRepo.UserRepository
+	userOrgRepo  coreRepo.UserOrgRepository
+	projectRepo  projectRepo.ProjectRepository
+	orgRepo      coreRepo.OrgRepository
 	kratosClient *ory.APIClient
 }
 
 // NewMiddlewareManager will create new an MiddlewareManager object
 func NewMiddlewareManager(
 	appConf *config.AppConfig,
-	userRepo postgres.UserRepository,
-	userOrgRepo postgres.UserOrgRepository,
+	userRepo coreRepo.UserRepository,
+	userOrgRepo coreRepo.UserOrgRepository,
+	projectRepo projectRepo.ProjectRepository,
+	orgRepo coreRepo.OrgRepository,
 ) *MiddlewareManager {
 	return &MiddlewareManager{
 		appConf:      appConf,
 		userRepo:     userRepo,
 		userOrgRepo:  userOrgRepo,
+		projectRepo:  projectRepo,
+		orgRepo:      orgRepo,
 		kratosClient: kratos.NewKratosSelfHostedClient(appConf.KratosApiEndpoint, appConf.Environment == "development"),
 	}
 }
 
-func (m *MiddlewareManager) GenerateRequestID() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			reqId := c.Request().Header.Get(constants.HeaderXRequestID)
-			if reqId == "" {
-				reqId = utils.GenerateUUID()
-			}
-
-			c.Request().Header.Set(constants.HeaderXRequestID, reqId)
-			c.Set(constants.RequestIDContextKey, reqId)
-			return next(c)
-		}
-	}
-}
-
-func (m *MiddlewareManager) Auth() echo.MiddlewareFunc {
+func (m MiddlewareManager) Auth() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		if m.appConf.Environment != "local" {
 			// current just support Kratos Authn
@@ -72,17 +65,116 @@ func (m *MiddlewareManager) Auth() echo.MiddlewareFunc {
 			if err != nil {
 				logger.Log().Errorw("error while fetch user for auth", "email", strings.ReplaceAll(email, "\n", ""), "error", err)
 				return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-					"message": "cannot fetch user",
+					"error": "cannot fetch user",
 				})
 			}
 
 			if u.Status != domains.UserStatusActive {
 				return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-					"message": "user is not active",
+					"error": "user is not active",
 				})
 			}
 
-			c.Set(constants.UserContextKey, u)
+			c.Set(constants.ContextKeyUser, u)
+			return next(c)
+		}
+	}
+}
+
+func (m MiddlewareManager) CheckPolicies() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			denyMsg, err := authz.CheckPoliciesContext(c)
+			if err != nil {
+				msg := ""
+				if len(denyMsg) > 0 {
+					msg = denyMsg[0]
+				}
+				return c.JSON(http.StatusForbidden, map[string]interface{}{
+					"error": msg,
+				})
+			}
+			return next(c)
+		}
+	}
+}
+
+func (m MiddlewareManager) CheckPoliciesWithOrg() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			orgId := utils.GetResourceIdFromParam(c, "orgId")
+			org, err := m.orgRepo.GetByID(c.Request().Context(), orgId)
+			if err != nil {
+				if err == constants.ErrNotFound {
+					return c.JSON(http.StatusNotFound, map[string]interface{}{
+						"error": "Not found",
+					})
+				}
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"error": err.Error(),
+				})
+			}
+
+			denyMsg, err := authz.CheckPoliciesContext(c, authz.WithInputOrg(org))
+			if err != nil {
+				msg := ""
+				if len(denyMsg) > 0 {
+					msg = denyMsg[0]
+				}
+				return c.JSON(http.StatusForbidden, map[string]interface{}{
+					"error": msg,
+				})
+			}
+
+			c.Set(constants.ContextKeyOrg, org)
+			return next(c)
+		}
+	}
+}
+
+func (m MiddlewareManager) CheckPoliciesWithProject() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			projectId := utils.GetResourceIdFromParam(c, "projectId")
+			project, err := m.projectRepo.GetByID(c.Request().Context(), projectId)
+			if err != nil {
+				if err == constants.ErrNotFound {
+					return c.JSON(http.StatusNotFound, map[string]interface{}{
+						"error": "Not found",
+					})
+				}
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"error": err.Error(),
+				})
+			}
+
+			denyMsg, err := authz.CheckPoliciesContext(c, authz.WithInputExtraData("project", project))
+			if err != nil {
+				msg := ""
+				if len(denyMsg) > 0 {
+					msg = denyMsg[0]
+				}
+				return c.JSON(http.StatusForbidden, map[string]interface{}{
+					"error": msg,
+				})
+			}
+
+			c.Set(constants.ContextKeyProject, project)
+			return next(c)
+		}
+	}
+}
+
+func (m MiddlewareManager) CheckPoliciesWithRequestPayload(payloadInst interface{}) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if err := c.Bind(&payloadInst); err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"error": err.Error(),
+				})
+			}
+
+			c.Set(constants.ContextKeyPayload, payloadInst)
 			return next(c)
 		}
 	}
@@ -113,8 +205,8 @@ func (m *MiddlewareManager) fetchUserFromAuth(ctx context.Context, code, email s
 		OrgRole: map[int64]string{},
 	}
 
-	userOrgs, _, err := m.userOrgRepo.Fetch(ctx, postgres.ParamsForFetchUserOrgs{
-		CommonParamsForFetch: defines.CommonParamsForFetch{
+	userOrgs, _, err := m.userOrgRepo.Fetch(ctx, coreRepo.ParamsForFetchUserOrgs{
+		CommonParamsForFetch: contexts.CommonParamsForFetch{
 			NoLimit: true,
 		},
 		UserIds: []int64{user.Id},

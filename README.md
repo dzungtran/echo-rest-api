@@ -32,12 +32,13 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 - [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password, 2FA) using [Ory/Kratos](https://github.com/ory/kratos).
 - [x] REST API using [labstack/echo](https://github.com/labstack/echo).
 - [x] DB Migration using [golang-migrate/migrate](https://github.com/golang-migrate/migrate).
+- [x] Modular structure.
 - [x] Configs via environmental variables.
 - [x] Unit tests.
 - [x] Dependency injection using [uber-go/dig](https://github.com/uber-go/dig).
 - [x] Role based access control using [Open Policy Agent](https://github.com/open-policy-agent/opa).
 - [x] Module generation, quickly create model, usecase, api handler.
-- CLI support. try: `make tools` using [spf13/cobra](https://github.com/spf13/cobra).
+- [x] CLI support. try: `go run ./tools/mod/ gen` using [spf13/cobra](https://github.com/spf13/cobra).
 
 ## Running the project
 
@@ -45,7 +46,8 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 - Copy `.env.example` to `.env.docker`
 - Add a new line `127.0.0.1	echo-rest.local` to `/etc/hosts` file.
 - Run `docker compose up -d`.
-- Go to `localhost:8088` to verify if the server works.
+- Go to `echo-rest.local:8088` to verify if the API server works.
+- Go to `echo-rest.local:4455` to verify if the Kratos works.
 
 ## Environment variables
 
@@ -88,16 +90,16 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 ├── cmd
 │   └── api             # Main package of API service
 ├── config              # Application configs struct
-├── delivery
-│   ├── defines
-│   ├── http
-│   ├── requests
 │   ...        
 ├── docs                # Content documentation and PlantUML for charts and diagrams
 ├── domains
 ├── infrastructure
 ├── migrations
 │   └── sql             # Migration files
+├── modules
+│   ├── core            # Core module, includes apis: users, orgs
+│   ├── projects        # Demo module generation
+│   └── shared          # To store common usecases and domains which shared between modules
 ├── out                 # Output folder of PlantUML
 ├── pkg
 │   ├── authz           # Contents Rego rule files for RBAC
@@ -105,15 +107,12 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 │   ├── cue             # Contents cue files for data validation
 │   ...
 │   └── utils           # Contents helper functions
-├── repositories
-│   ├── postgres
-│   └── redis
 ├── tests
-├── tools
-│   ├── modtool         # Module generation
-│   ├── routes          # Generate routes file for Authorization
-│   └── scripts         # Some helpful bash commands
-└── usecases
+└── tools
+   ├── modtool         # Module generation
+   ├── routes          # Generate routes file for Authorization
+   └── scripts         # Some helpful bash commands
+
 ```
 
 ## Open source refs

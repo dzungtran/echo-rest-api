@@ -55,6 +55,7 @@ func init() {
 	cfg.EncoderConfig = zap.NewProductionEncoderConfig()
 	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	cfg.Encoding = "json"
+	cfg.OutputPaths = []string{"stdout"}
 	logger, _ := cfg.Build()
 	log = logger.Sugar()
 }
@@ -64,6 +65,8 @@ func InitLog(env string) {
 	if env == "production" {
 		var cfg = zap.NewProductionConfig()
 		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		cfg.Encoding = "json"
+		cfg.OutputPaths = []string{"stdout"}
 		cfg.Level.SetLevel(zap.WarnLevel)
 		logger, _ := cfg.Build()
 		log = logger.Sugar()
@@ -74,16 +77,24 @@ func Log() Logger {
 	return log
 }
 
+func Set(newLog Logger) {
+	log = newLog
+}
+
 func WithConfigLevel(level string) CallLogOption {
 	return CallLogOption{
 		applyFunc: func(oio *logConfigs) {
 			switch strings.ToLower(level) {
+			case "debug":
+				oio.Level = zapcore.DebugLevel
 			case "info":
 				oio.Level = zapcore.InfoLevel
 			case "warn":
 				oio.Level = zapcore.WarnLevel
 			case "error":
 				oio.Level = zapcore.ErrorLevel
+			case "fatal":
+				oio.Level = zapcore.FatalLevel
 			}
 		},
 	}
@@ -97,8 +108,12 @@ func WithConfigEncoding(encoding string) CallLogOption {
 	}
 }
 
-func Reload(cnf ...CallLogOption) {
+func InitWithOptions(cnf ...CallLogOption) {
 	var cfg = zap.NewDevelopmentConfig()
+	cfg.EncoderConfig = zap.NewProductionEncoderConfig()
+	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	cfg.OutputPaths = []string{"stdout"}
+	cfg.Encoding = "json"
 
 	c := &logConfigs{}
 	if len(cnf) > 0 {
@@ -110,7 +125,7 @@ func Reload(cnf ...CallLogOption) {
 	}
 
 	if c.Level >= -1 {
-		cfg.Level.SetLevel(zap.WarnLevel)
+		cfg.Level.SetLevel(zap.DebugLevel)
 	}
 
 	logger, _ := cfg.Build()

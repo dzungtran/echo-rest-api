@@ -1,0 +1,5 @@
+package shared
+
+func RegisterModule() {
+
+}

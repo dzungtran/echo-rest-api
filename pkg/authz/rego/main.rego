@@ -27,6 +27,14 @@ org_id = id {
 	id = format_int(input.org.id, 10)
 }
 
+org_id = id {
+	id = format_int(input.project.org_id, 10)
+}
+
+org_id = id {
+	id = format_int(input.payload.org_id, 10)
+}
+
 usr_role = input.user.org_role[org_id]
 
 req_permission = access {

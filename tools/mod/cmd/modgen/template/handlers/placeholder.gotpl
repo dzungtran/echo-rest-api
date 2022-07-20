@@ -1,0 +1,156 @@
+package handlers
+
+import (
+	"fmt"
+	"net/http"
+
+	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/dto"
+	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/usecases"
+	"{{ .RootPackage }}/pkg/constants"
+	"{{ .RootPackage }}/pkg/middlewares"
+	"{{ .RootPackage }}/pkg/utils"
+	"{{ .RootPackage }}/pkg/wrapper"
+	"github.com/labstack/echo/v4"
+)
+
+type {{ .SingularName }}Handler struct {
+	{{ .SingularName | ToLowerCamel }}UC usecases.{{ .SingularName }}Usecase
+}
+
+// New{{ .SingularName }}Handler will initialize the {{ .SingularName }} resources endpoint
+func New{{ .SingularName }}Handler(g *echo.Group, middManager *middlewares.MiddlewareManager, {{ .SingularName | ToLowerCamel }}Usecase usecases.{{ .SingularName }}Usecase) {
+	handler := &{{ .SingularName }}Handler{
+		{{ .SingularName | ToLowerCamel }}UC: {{ .SingularName | ToLowerCamel }}Usecase,
+	}
+
+	apiV1 := g.Group("admin/{{ .PluralName | ToKebab }}", middManager.Auth(), middManager.CheckPolicies())
+	apiV1.GET("", wrapper.Wrap(handler.Fetch), middManager.CheckPoliciesWithRequestPayload(dto.Search{{ .PluralName }}Req{})).Name = "list:{{ .SingularName | ToLowerCamel }}"
+	apiV1.POST("", wrapper.Wrap(handler.Create), middManager.CheckPoliciesWithRequestPayload(dto.Create{{ .SingularName }}Req{})).Name = "create:{{ .SingularName | ToLowerCamel }}"
+
+	apiV1Resource := g.Group("admin/{{ .PluralName | ToKebab }}/:{{ .SingularName | ToLowerCamel }}Id",
+		middManager.Auth(),
+		middlewares.RequireResourceIdInParam("{{ .SingularName | ToLowerCamel }}Id"),
+	)
+	apiV1Resource.GET("", wrapper.Wrap(handler.GetByID)).Name = "read:{{ .SingularName | ToLowerCamel }}"
+	apiV1Resource.PUT("", wrapper.Wrap(handler.Update)).Name = "update:{{ .SingularName | ToLowerCamel }}"
+	apiV1Resource.DELETE("", wrapper.Wrap(handler.Delete)).Name = "delete:{{ .SingularName | ToLowerCamel }}"
+}
+
+// Create will store the {{ .SingularName }} by given request body
+func (h *{{ .SingularName }}Handler) Create(c echo.Context) wrapper.Response {
+	ctx := c.Request().Context()
+
+	payload := c.Get(constants.ContextKeyPayload)
+	req, ok := payload.(dto.Create{{ .SingularName }}Req)
+
+	if !ok {
+		return wrapper.Response{
+			Status: http.StatusBadRequest,
+			Error:  fmt.Errorf("Invalid payload"),
+		}
+	}
+
+	if _, err := h.{{ .SingularName | ToLowerCamel }}UC.Create(ctx, req); err != nil {
+		return wrapper.Response{
+			Status: http.StatusInternalServerError,
+			Error:  utils.NewError(err, ""),
+		}
+	}
+
+	return wrapper.Response{Status: http.StatusCreated}
+}
+
+// GetByID will get {{ .SingularName }} by given id
+func (h *{{ .SingularName }}Handler) GetByID(c echo.Context) wrapper.Response {
+	id := utils.GetResourceIdFromParam(c, "{{ .SingularName | ToLowerCamel }}Id")
+	
+	data, err := h.{{ .SingularName | ToLowerCamel }}UC.GetByID(c.Request().Context(), id)
+	if err != nil {
+		return wrapper.Response{
+			Error:  err,
+			Status: http.StatusInternalServerError,
+		}
+	}
+
+	return wrapper.Response{
+		Data: data,
+	}
+}
+
+// Fetch will fetch the {{ .SingularName }}
+func (h *{{ .SingularName }}Handler) Fetch(c echo.Context) wrapper.Response {
+	ctx := c.Request().Context()
+	payload := c.Get(constants.ContextKeyPayload)
+	req, ok := payload.(dto.Search{{ .PluralName }}Req)
+	if !ok {
+		return wrapper.Response{
+			Status: http.StatusBadRequest,
+			Error:  fmt.Errorf("Invalid payload"),
+		}
+	}
+
+	{{ .PluralName | ToLowerCamel }}, count, err := h.{{ .SingularName | ToLowerCamel }}UC.Fetch(ctx, req)
+	if err != nil {
+		return wrapper.Response{
+			Error:  err,
+			Status: http.StatusInternalServerError,
+		}
+	}
+
+	return wrapper.Response{
+		Data:         {{ .PluralName | ToLowerCamel }},
+		Total:        count,
+		IncludeTotal: true,
+	}
+}
+
+// Update will get {{ .SingularName }} by given request body
+func (h *{{ .SingularName }}Handler) Update(c echo.Context) wrapper.Response {
+	var err error
+	ctx := c.Request().Context()
+
+	var req dto.Update{{ .SingularName }}Req
+	if err = c.Bind(&req); err != nil {
+		return wrapper.Response{
+			Status: http.StatusUnprocessableEntity,
+			Error:  utils.NewError(err, ""),
+		}
+	}
+
+	if err := h.{{ .SingularName | ToLowerCamel }}UC.Update(ctx, req.ID, req); err != nil {
+		if err == constants.ErrNotFound {
+			return wrapper.Response{
+				Status: http.StatusNotFound,
+				Error:  utils.NewNotFoundError(),
+			}
+		}
+		return wrapper.Response{
+			Error:  err,
+			Status: http.StatusInternalServerError,
+		}
+	}
+
+	return wrapper.Response{}
+}
+
+// Delete will delete {{ .SingularName }} by given param
+func (h *{{ .SingularName }}Handler) Delete(c echo.Context) wrapper.Response {
+	var err error
+	ctx := c.Request().Context()
+	id := utils.GetResourceIdFromParam(c, "{{ .SingularName | ToLowerCamel }}Id")
+
+	if err = h.{{ .SingularName | ToLowerCamel }}UC.Delete(ctx, id); err != nil {
+		if err == constants.ErrNotFound {
+			return wrapper.Response{
+				Status: http.StatusNotFound,
+				Error:  utils.NewNotFoundError(),
+			}
+		}
+		return wrapper.Response{
+			Status: http.StatusInternalServerError,
+			Error:  utils.NewError(err, ""),
+		}
+	}
+
+	return wrapper.Response{}
+}

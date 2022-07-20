@@ -10,7 +10,6 @@ import (
 	"github.com/dzungtran/echo-rest-api/infrastructure/datastore"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -24,7 +23,7 @@ func generateRoutes() {
 		&datastore.SlaveDbInstance{},
 		&config.AppConfig{},
 	)
-	di.RegisterHandlers(e, container)
+	di.RegisterModules(e, container)
 
 	mapRoutes := map[string]map[string]string{}
 	count := 0
@@ -41,7 +40,7 @@ func generateRoutes() {
 		mapRoutes[r.Path] = acl
 	}
 
-	logrus.Info("Generated routes: ", count)
+	logger.Log().Info("Generated routes: ", count)
 	data, err := json.MarshalIndent(mapRoutes, "", "  ")
 	if err != nil {
 		logger.Log().Fatalf("error json marshal: %v", err)

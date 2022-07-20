@@ -1,5 +1,10 @@
 package constants
 
 const (
-	UserContextKey = "user"
+	ContextKeyUser      = "user"
+	ContextKeyRequestId = "rid"
+	ContextKeyLogger    = "logger"
+	ContextKeyProject   = "project"
+	ContextKeyOrg       = "org"
+	ContextKeyPayload   = "payload"
 )

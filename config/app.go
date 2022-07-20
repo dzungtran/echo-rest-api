@@ -22,6 +22,7 @@ type AppConfig struct {
 	KratosWebhookApiKey string `json:"kratos_webhook_api_key"`
 	KratosApiEndpoint   string `json:"kratos_api_endpoint"`
 	AutoMigrate         bool   `json:"auto_migrate"`
+	LogLevel            string `json:"log_level"`
 }
 
 type AppValidator struct {
@@ -39,7 +40,7 @@ func InitAppConfig() (*AppConfig, error) {
 	currentEnv := "development"
 	appPort := os.Getenv("PORT")
 	if appPort == "" {
-		appPort = "8080"
+		appPort = "8088"
 	}
 
 	if os.Getenv("ENV") != "" {
@@ -58,5 +59,6 @@ func InitAppConfig() (*AppConfig, error) {
 		AutoMigrate:         os.Getenv("AUTO_MIGRATE") == "true",
 		KratosWebhookApiKey: os.Getenv("KRATOS_WEBHOOK_API_KEY"),
 		KratosApiEndpoint:   os.Getenv("KRATOS_API_ENDPOINT"),
+		LogLevel:            os.Getenv("LOG_LEVEL"),
 	}, nil
 }

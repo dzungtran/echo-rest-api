@@ -2,13 +2,13 @@ package di
 
 import (
 	"github.com/dzungtran/echo-rest-api/config"
-	httpDelivery "github.com/dzungtran/echo-rest-api/delivery/http"
 	"github.com/dzungtran/echo-rest-api/infrastructure/datastore"
+	"github.com/dzungtran/echo-rest-api/modules/core"
+	"github.com/dzungtran/echo-rest-api/modules/projects"
+	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/middlewares"
-	"github.com/dzungtran/echo-rest-api/repositories/postgres"
-	"github.com/dzungtran/echo-rest-api/usecases"
+	sqlTools "github.com/dzungtran/echo-rest-api/pkg/sql-tools"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"go.uber.org/dig"
 )
 
@@ -25,31 +25,48 @@ func BuildDIContainer(
 		return conf
 	})
 
-	_ = postgres.Inject(container)
-	_ = usecases.Inject(container)
-	_ = container.Provide(middlewares.NewMiddlewareManager)
+	container.Provide(func() *sqlTools.SqlxTransaction {
+		return sqlTools.NewSqlxTransaction(mdbi)
+	})
 
 	return container
 }
 
-func RegisterHandlers(e *echo.Echo, container *dig.Container) error {
-	return container.Invoke(func(params DIContainerParams) {
-		e.Use(params.MiddlewareManager.GenerateRequestID())
+func RegisterModules(e *echo.Echo, container *dig.Container) error {
+	var err error
+	mapModules := map[string]core.ModuleInstance{
+		"core":     core.Module,
+		"projects": projects.Module,
+	}
 
-		// Group routes for middlewares
-		adminGroup := e.Group("/admin",
-			middleware.CORSWithConfig(params.AppConfig.CORSConfig),
-		)
+	gRoot := e.Group("/")
+	for _, m := range mapModules {
+		err = m.RegisterRepositories(container)
+		if err != nil {
+			logger.Log().Errorf("RegisterRepositories error: %v", err)
+			return err
+		}
 
-		hookGroup := e.Group("/hooks",
-			middleware.CORSWithConfig(params.AppConfig.CORSConfig),
-		)
+		err = m.RegisterUseCases(container)
+		if err != nil {
+			logger.Log().Errorf("RegisterUseCases error: %v", err)
+			return err
+		}
+	}
 
-		// bind api handlers to group
-		httpDelivery.NewUserHandler(adminGroup, params.MiddlewareManager, params.UserUsecase)
-		httpDelivery.NewOrgHandler(adminGroup, params.MiddlewareManager, params.OrgUsecase)
-		httpDelivery.NewKratosHookHandler(hookGroup, params.MiddlewareManager, params.UserUsecase)
-		// Auto generate
-		// DO NOT DELETE THIS LINE ABOVE
-	})
+	err = container.Provide(middlewares.NewMiddlewareManager)
+	if err != nil {
+		logger.Log().Errorf("RegisterHandlers error: %v", err)
+		return err
+	}
+
+	for _, m := range mapModules {
+		err = m.RegisterHandlers(gRoot, container)
+		if err != nil {
+			logger.Log().Errorf("RegisterHandlers error: %v", err)
+			return err
+		}
+	}
+
+	return err
 }

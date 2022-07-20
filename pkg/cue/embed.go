@@ -10,4 +10,7 @@ var (
 
 	//go:embed definitions/user.cue
 	CueDefinitionForUser string
+
+	//go:embed definitions/project.cue
+	CueDefinitionForProject string
 )

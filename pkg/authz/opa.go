@@ -7,15 +7,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dzungtran/echo-rest-api/domains"
-	"github.com/dzungtran/echo-rest-api/pkg/constants"
+	"github.com/dzungtran/echo-rest-api/modules/core/domains"
+	"github.com/dzungtran/echo-rest-api/pkg/contexts"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/open-policy-agent/opa/storage/inmem"
 	"github.com/open-policy-agent/opa/util"
-	"github.com/sirupsen/logrus"
 	"github.com/tidwall/sjson"
 )
 
@@ -59,24 +58,24 @@ func init() {
 	// Compile the module. The keys are used as identifiers in error messages.
 	compiler, err := ast.CompileModules(regoContents)
 	if err != nil {
-		logrus.Fatalf("error while init rego compiler, details: %s", err.Error())
+		logger.Log().Fatalf("error while init rego compiler, details: %s", err.Error())
 	}
 
 	var jsonData map[string]interface{}
 	var routesData map[string]interface{}
 	err = util.UnmarshalJSON(routesFile, &routesData)
 	if err != nil {
-		logrus.Fatalf("error while init rego instance, details: %s", err.Error())
+		logger.Log().Fatalf("error while init rego instance, details: %s", err.Error())
 	}
 
 	dataFile, err = sjson.SetBytes(dataFile, "endpoints_acl", routesData)
 	if err != nil {
-		logrus.Fatalf("error while build data file, details: %s", err.Error())
+		logger.Log().Fatalf("error while build data file, details: %s", err.Error())
 	}
 
 	err = util.UnmarshalJSON(dataFile, &jsonData)
 	if err != nil {
-		logrus.Fatalf("error while init rego instance, details: %s", err.Error())
+		logger.Log().Fatalf("error while init rego instance, details: %s", err.Error())
 	}
 
 	// Manually create the storage layer. inmem.NewFromObject returns an
@@ -109,7 +108,7 @@ func init() {
 func readRegoFiles(dfs embed.FS, folderName string, filesContent map[string]string) {
 	dirs, err := dfs.ReadDir(folderName)
 	if err != nil {
-		logrus.Fatalf("error while init rego compiler, details: %s", err.Error())
+		logger.Log().Fatalf("error while init rego compiler, details: %s", err.Error())
 	}
 
 	for _, d := range dirs {
@@ -257,7 +256,7 @@ func CheckPolicies(user *domains.UserWithRoles, callOpts ...CallOPAInputOption) 
 }
 
 func CheckPoliciesContext(c echo.Context, callOpts ...CallOPAInputOption) (denyMsg []string, err error) {
-	u, err := GetUserFromContext(c)
+	u, err := contexts.GetUserFromContext(c)
 	if err != nil {
 		return
 	}
@@ -268,15 +267,6 @@ func CheckPoliciesContext(c echo.Context, callOpts ...CallOPAInputOption) (denyM
 	)
 
 	return CheckPolicies(u, callOpts...)
-}
-
-func GetUserFromContext(c echo.Context) (usr *domains.UserWithRoles, err error) {
-	uCtx := c.Get(constants.UserContextKey)
-	usr, ok := uCtx.(*domains.UserWithRoles)
-	if !ok || usr == nil {
-		err = constants.ErrUnauthorized
-	}
-	return
 }
 
 func appliedOPAInputOption(callOptions []CallOPAInputOption) *opaInputOpts {

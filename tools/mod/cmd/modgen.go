@@ -3,30 +3,32 @@ package cmd
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
 
+	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
-	"github.com/dzungtran/echo-rest-api/tools/mod/cmd/modgen"
-	"github.com/sirupsen/logrus"
+	"github.com/gertd/go-pluralize"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
 
 type (
 	modGenOpts struct {
-		Name        string
-		Dir         string
-		SkipHandler bool
-		SkipUseCase bool
+		Name string
+		Dir  string
 	}
 	modgenTplVars struct {
-		ModuleName  string
-		RootPackage string
+		ModuleName   string
+		SingularName string
+		PluralName   string
+		RootPackage  string
 	}
 	modConfigs struct {
 		RootPackage string `yaml:"RootPackage"`
@@ -34,19 +36,12 @@ type (
 )
 
 const (
-	defaultFlagCodeGen = "// Auto generate"
-	configFile         = ".modgen.yaml"
+	configFile = ".modgen.yaml"
 )
 
 var (
-	mgOpts       = &modGenOpts{}
-	cnf          = &modConfigs{}
-	digFilePaths = map[string]string{
-		"usecases/dig.go":              `_ = container.Provide(New{{ .ModuleName }}Usecase)`,
-		"repositories/postgres/dig.go": `_ = container.Provide(NewPgsql{{ .ModuleName }}Repository)`,
-		"cmd/api/di/params.go":         `{{ .ModuleName }}Usecase usecases.{{ .ModuleName }}Usecase`,
-		"cmd/api/di/di.go":             `httpDelivery.New{{ .ModuleName }}Handler(adminGroup, params.MiddlewareManager, params.{{ .ModuleName }}Usecase)`,
-	}
+	mgOpts   = &modGenOpts{}
+	cnf      = &modConfigs{}
 	funcsMap = template.FuncMap{
 		"ToLower":      strings.ToLower,
 		"ToSnake":      utils.ToSnake,
@@ -67,13 +62,13 @@ var modgenCmd = &cobra.Command{
 		if ok, _ := regexp.MatchString(nameRegex, mgOpts.Name); !ok {
 			return errors.New("module name must match ( " + nameRegex + " )")
 		}
-
-		mgOpts.SkipHandler = cmd.Flag("skip-handler").Changed
-		mgOpts.SkipUseCase = cmd.Flag("skip-usecase").Changed
-
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		parsedFiles := make(map[string]string)
+		folderStruct := make(map[string]bool)
+
+		pluralize := pluralize.NewClient()
 		yamlFile, err := ioutil.ReadFile(configFile)
 		if err != nil {
 			return err
@@ -84,153 +79,75 @@ var modgenCmd = &cobra.Command{
 			return err
 		}
 
-		tpls := modgen.GetModGenTemplates()
 		tVars := modgenTplVars{
-			ModuleName:  mgOpts.Name,
-			RootPackage: cnf.RootPackage,
+			ModuleName:   pluralize.Plural(mgOpts.Name),
+			SingularName: pluralize.Singular(mgOpts.Name),
+			PluralName:   pluralize.Plural(mgOpts.Name),
+			RootPackage:  cnf.RootPackage,
 		}
-		tplDir := "templates"
 
-		tplFiles, err := tpls.ReadDir(tplDir)
+		tplDir := "tools/mod/cmd/modgen/template"
+		err = filepath.Walk(tplDir,
+			func(path string, finfo os.FileInfo, err error) error {
+				if err != nil {
+					return err
+				}
+
+				if finfo.IsDir() {
+					return nil
+				}
+
+				fname := strings.ReplaceAll(path, tplDir, "modules/"+utils.ToKebab(tVars.ModuleName))
+				folderStruct[strings.ReplaceAll(fname, finfo.Name(), "")] = true
+
+				fcontent, err := os.ReadFile(path)
+				if err != nil {
+					logger.Log().Errorf("Error while read template, details: %v", err)
+					return err
+				}
+
+				pt, err := template.New(fname).
+					Funcs(funcsMap).
+					Parse(string(fcontent))
+				if err != nil {
+					logger.Log().Errorf("Error while parse template, details: %v", err)
+					return err
+				}
+
+				builder := &bytes.Buffer{}
+				err = pt.Execute(builder, tVars)
+				if err != nil {
+					logger.Log().Errorf("Error while parse template, details: %v", err)
+					return err
+				}
+
+				parsedFiles[fname] = builder.String()
+				return nil
+			})
 		if err != nil {
+			logger.Log().Errorf("Error while parse template, details: %v", err)
 			return err
 		}
 
-		// parse file templates
-		parsedTpls := make([]string, 0)
-		for _, f := range tplFiles {
-			if f.IsDir() {
-				continue
+		if len(folderStruct) > 0 {
+			for fd := range folderStruct {
+				os.MkdirAll(fd, os.ModePerm)
 			}
+		}
 
-			fname := tplDir + "/" + f.Name()
-			fcontent, err := tpls.ReadFile(fname)
+		for fn, c := range parsedFiles {
+			fn = strings.ReplaceAll(fn, ".gotpl", ".go")
+			fn = strings.ReplaceAll(fn, "placeholder", utils.ToSnake(tVars.SingularName))
+			err = ioutil.WriteFile(fn, []byte(c), 0644)
 			if err != nil {
-				return err
+				fmt.Println("failed writing to file: ", fn, "\n", err.Error())
 			}
-
-			pt, err := template.New(fname).
-				Funcs(funcsMap).
-				Parse(string(fcontent))
-			if err != nil {
-				return err
-			}
-
-			builder := &bytes.Buffer{}
-			err = pt.Execute(builder, tVars)
-			if err != nil {
-				return err
-			}
-			parsedTpls = append(parsedTpls, builder.String())
-		}
-
-		re := regexp.MustCompile(`(?m)^\/\/\sTarget:(.*)$`)
-		parsedFiles := make(map[string]string)
-		for _, tpl := range parsedTpls {
-			sm := re.FindStringSubmatch(tpl)
-			if len(sm) != 2 {
-				continue
-			}
-			fn := strings.Trim(sm[1], " ")
-
-			if mgOpts.SkipHandler && (strings.HasPrefix(fn, "delivery/http")) {
-				continue
-			}
-
-			if mgOpts.SkipUseCase && (strings.HasPrefix(fn, "delivery/http") || strings.HasPrefix(fn, "delivery/requests") || strings.HasPrefix(fn, "usecases")) {
-				continue
-			}
-
-			parsedFiles[fn] = tpl
-		}
-
-		// write generated file
-		curDir, _ := os.Getwd()
-		if mgOpts.Dir != "" {
-			curDir = strings.Trim(mgOpts.Dir, " ")
-		}
-
-		logrus.Debugf("Working Dir: %v", curDir)
-
-		for fname, fcon := range parsedFiles {
-			writeGeneratedFile(curDir, fname, fcon)
-		}
-
-		// append generated files to dig files for DI
-		for fp, str := range digFilePaths {
-
-			if mgOpts.SkipUseCase && strings.HasPrefix(fp, "usecases") {
-				continue
-			}
-			appendGeneratedFileForDependencyInjection(fp, str, tVars)
 		}
 
 		runGenerateRoutes()
-		logrus.Info("Done!")
+		logger.Log().Info("Done!")
 		return nil
 	},
-}
-
-func writeGeneratedFile(curDir, fname, fcon string) error {
-	f, err := os.OpenFile(curDir+"/"+fname, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		logrus.Error(err)
-		return err
-	}
-	_, err = f.Write([]byte(fcon))
-	if err != nil {
-		logrus.Error(err)
-		return err
-	}
-
-	if err := f.Close(); err != nil {
-		logrus.Error(err)
-		return err
-	}
-	return nil
-}
-
-func appendGeneratedFileForDependencyInjection(fp, str string, tVars modgenTplVars) {
-	f, err := os.OpenFile(fp, os.O_RDWR, 0644)
-	if err != nil {
-		logrus.Errorf("failed opening file: %s", err)
-		return
-	}
-	defer f.Close()
-
-	data, err := ioutil.ReadFile(fp)
-	if err != nil {
-		logrus.Errorf("failed reading data from file: %s", err)
-		return
-	}
-
-	// parse template
-	pt, err := template.New(fp).
-		Funcs(funcsMap).
-		Parse(str)
-	if err != nil {
-		logrus.Errorf("failed parse template: %s", err)
-		return
-	}
-
-	builder := &bytes.Buffer{}
-	err = pt.Execute(builder, tVars)
-	if err != nil {
-		logrus.Errorf("failed parse template: %s", err)
-		return
-	}
-
-	// Find string existed then ignore append
-	if strings.Contains(string(data), builder.String()) {
-		return
-	}
-
-	parsedStr := builder.String() + "\n\t" + defaultFlagCodeGen
-	fcontent := strings.Replace(string(data), defaultFlagCodeGen, parsedStr, 1)
-	_, err = f.WriteAt([]byte(fcontent), 0) // Write at 0 beginning
-	if err != nil {
-		logrus.Errorf("failed writing to file: %s", err)
-	}
 }
 
 func runGenerateRoutes() {
@@ -241,16 +158,14 @@ func runGenerateRoutes() {
 
 	err := cmd.Run()
 	if err != nil {
-		logrus.Fatal(err)
+		logger.Log().Fatal(err)
 	}
-	logrus.Info("Run: ", out.String())
+	logger.Log().Info("Run: ", out.String())
 }
 
 func init() {
 	rootCmd.AddCommand(modgenCmd)
 	modgenCmd.Flags().StringVarP(&mgOpts.Name, "name", "n", "", "module name to generate")
-	modgenCmd.Flags().BoolVarP(&mgOpts.SkipHandler, "skip-handler", "", false, "skip generate handler")
-	modgenCmd.Flags().BoolVarP(&mgOpts.SkipUseCase, "skip-usecase", "", false, "skip generate usecase")
 	modgenCmd.Flags().StringVarP(&mgOpts.Dir, "dir", "d", "", "project's root path")
 	modgenCmd.MarkFlagRequired("name")
 }

@@ -11,6 +11,15 @@
   "/admin/orgs/:orgId/invites": {
     "POST": "invite:org"
   },
+  "/admin/projects": {
+    "GET": "list:project",
+    "POST": "create:project"
+  },
+  "/admin/projects/:projectId": {
+    "DELETE": "delete:project",
+    "GET": "read:project",
+    "PUT": "update:project"
+  },
   "/admin/users": {
     "GET": "list:user",
     "POST": "create:user"

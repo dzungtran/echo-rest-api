@@ -20,7 +20,7 @@ func main() {
 	// init app config
 	conf, _ := config.InitAppConfig()
 
-	logger.InitLog(conf.Environment)
+	logger.InitWithOptions(logger.WithConfigLevel(conf.LogLevel))
 	if logger.Log() != nil {
 		defer logger.Log().Sync()
 	}
@@ -31,13 +31,18 @@ func main() {
 	// Bind default middleware
 	e.Use(middleware.LoggerWithConfig(config.GetEchoLogConfig(conf)))
 	e.Use(middleware.Recover())
+	e.Use(middleware.RequestID())
+	e.HideBanner = true
+	// e.HidePort = true
 	e.Validator = conf.Validator
 
 	// Setup infra
 	mDBInstance := datastore.NewMasterDbInstance(conf.DatabaseURL)
 	sDBInstance := datastore.NewSlaveDbInstance(conf.DatabaseURL)
+
 	if conf.AutoMigrate {
-		migrations.RunAutoMigrate(mDBInstance.DBX().DB)
+		migrateDBInstance := datastore.NewMasterDbInstance(conf.DatabaseURL)
+		migrations.RunAutoMigrate(migrateDBInstance.DBX().DB)
 	}
 
 	// Setup middleware manager
@@ -59,15 +64,20 @@ func main() {
 		})
 	})
 
-	err := di.RegisterHandlers(e, container)
+	err := di.RegisterModules(e, container)
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
+	// err = di.RegisterHandlers(e, container)
+	// if err != nil {
+	// 	e.Logger.Fatal(err)
+	// }
+
 	// Start server
 	go func() {
 		if err := e.Start(":" + conf.AppPort); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server")
+			logger.Log().Fatal("shutting down the server")
 		}
 	}()
 

@@ -1,0 +1,90 @@
+package usecases
+
+import (
+	"context"
+
+	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/domains"
+	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/dto"
+	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/repositories"
+	"{{ .RootPackage }}/pkg/contexts"
+	"github.com/jinzhu/copier"
+)
+
+// {{ .SingularName }}Usecase represent the {{ .SingularName | ToLowerCamel }}'s usecase contract
+type {{ .SingularName }}Usecase interface {
+	Create(ctx context.Context, request dto.Create{{ .SingularName }}Req) (*domains.{{ .SingularName }}, error)
+	GetByID(ctx context.Context, id int64) (*domains.{{ .SingularName }}, error)
+	Fetch(ctx context.Context, req dto.Search{{ .PluralName }}Req) ([]*domains.{{ .SingularName }}, int64, error)
+	Update(ctx context.Context, id int64, request dto.Update{{ .SingularName }}Req) error
+	Delete(ctx context.Context, id int64) error
+}
+
+type {{ .SingularName | ToLowerCamel }}Usecase struct {
+	{{ .SingularName | ToLowerCamel }}Repo repositories.{{ .SingularName }}Repository
+}
+
+// New{{ .SingularName }}Usecase will create new an {{ .SingularName | ToLowerCamel }}Usecase object representation of {{ .SingularName | ToLowerCamel }}Usecase interface
+func New{{ .SingularName }}Usecase({{ .SingularName | ToLowerCamel }}Repo repositories.{{ .SingularName }}Repository) {{ .SingularName }}Usecase {
+	return &{{ .SingularName | ToLowerCamel }}Usecase{
+		{{ .SingularName | ToLowerCamel }}Repo: {{ .SingularName | ToLowerCamel }}Repo,
+	}
+}
+
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Create(ctx context.Context, req dto.Create{{ .SingularName }}Req) ({{ .SingularName | ToLowerCamel }} *domains.{{ .SingularName }}, err error) {
+	{{ .SingularName | ToLowerCamel }} = &domains.{{ .SingularName }}{}
+	copier.Copy({{ .SingularName | ToLowerCamel }}, req)
+
+	// if err = utils.CueValidateObject("Create{{ .SingularName }}Req", cue.CueDefinitionFor{{ .SingularName }}, req); err != nil {
+	// 	return nil, err
+	// }
+
+	{{ .SingularName | ToLowerCamel }}Id, err := u.{{ .SingularName | ToLowerCamel }}Repo.Create(ctx, {{ .SingularName | ToLowerCamel }})
+	if err != nil {
+		return
+	}
+
+	{{ .SingularName | ToLowerCamel }}, err = u.{{ .SingularName | ToLowerCamel }}Repo.GetByID(ctx, {{ .SingularName | ToLowerCamel }}Id)
+	return
+}
+
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) GetByID(ctx context.Context, id int64) ({{ .SingularName | ToLowerCamel }} *domains.{{ .SingularName }}, err error) {
+	{{ .SingularName | ToLowerCamel }}, err = u.{{ .SingularName | ToLowerCamel }}Repo.GetByID(ctx, id)
+	return
+}
+
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Fetch(ctx context.Context, req dto.Search{{ .PluralName }}Req) ({{ .PluralName | ToLowerCamel }} []*domains.{{ .SingularName }}, count int64, err error) {
+	p := repositories.ParamsForFetch{{ .PluralName }}{
+		CommonParamsForFetch: contexts.CommonParamsForFetch{
+			Page:  uint64(req.Page),
+			Limit: uint64(req.Limit),
+		},
+	}
+
+	{{ .PluralName | ToLowerCamel }}, count, err = u.{{ .SingularName | ToLowerCamel }}Repo.Fetch(ctx, p)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Update(ctx context.Context, id int64, req dto.Update{{ .SingularName }}Req) (err error) {
+	{{ .SingularName | ToLowerCamel }}, err := u.{{ .SingularName | ToLowerCamel }}Repo.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	copier.Copy({{ .SingularName | ToLowerCamel }}, req)
+	err = u.{{ .SingularName | ToLowerCamel }}Repo.Update(ctx, {{ .SingularName | ToLowerCamel }}, []string{"name"})
+	return
+}
+
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Delete(ctx context.Context, id int64) (err error) {
+	_, err = u.{{ .SingularName | ToLowerCamel }}Repo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	err = u.{{ .SingularName | ToLowerCamel }}Repo.DeleteById(ctx, id)
+	return
+}

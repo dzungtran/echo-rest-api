@@ -3,7 +3,7 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/dzungtran/echo-rest-api/domains"
+	"github.com/dzungtran/echo-rest-api/modules/core/domains"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/labstack/echo/v4"
@@ -67,7 +67,7 @@ func (m *MiddlewareManager) KratosAuth(next echo.HandlerFunc) echo.HandlerFunc {
 			})
 		}
 
-		c.Set(constants.UserContextKey, u)
+		c.Set(constants.ContextKeyUser, u)
 		return next(c)
 	}
 }

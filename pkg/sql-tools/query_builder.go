@@ -1,4 +1,4 @@
-package sql_tools
+package sqlTools
 
 import (
 	"context"
@@ -7,7 +7,8 @@ import (
 	"time"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/dzungtran/echo-rest-api/delivery/defines"
+	"github.com/dzungtran/echo-rest-api/pkg/constants"
+	"github.com/dzungtran/echo-rest-api/pkg/contexts"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 )
 
@@ -87,16 +88,16 @@ func GetMapValuesFromStruct(ctx context.Context, st interface{}, callOpts ...Cal
 			continue
 		}
 
-		if len(opt.ignoreFields) > 0 && utils.IsStringSliceContains(opt.ignoreFields, dbKey) {
+		if len(opt.ignoreFields) > 0 && utils.IsSliceContains(opt.ignoreFields, dbKey) {
 			continue
 		}
 
-		if len(opt.autoDateTimeFields) > 0 && utils.IsStringSliceContains(opt.autoDateTimeFields, dbKey) {
+		if len(opt.autoDateTimeFields) > 0 && utils.IsSliceContains(opt.autoDateTimeFields, dbKey) {
 			rs[dbKey] = time.Now().UTC()
 			continue
 		}
 
-		if len(opt.selectFields) > 0 && !utils.IsStringSliceContains(opt.selectFields, dbKey) {
+		if len(opt.selectFields) > 0 && !utils.IsSliceContains(opt.selectFields, dbKey) {
 			continue
 		}
 
@@ -118,7 +119,7 @@ func GetColumnsAndValuesFromStruct(ctx context.Context, st interface{}, callOpts
 		f := t.Field(index)
 		dbKey := getKeyFromTag(f.Tag.Get("db"))
 
-		if len(opt.autoDateTimeFields) > 0 && utils.IsStringSliceContains(opt.autoDateTimeFields, dbKey) {
+		if len(opt.autoDateTimeFields) > 0 && utils.IsSliceContains(opt.autoDateTimeFields, dbKey) {
 			columns = append(columns, dbKey)
 			values = append(values, time.Now().UTC())
 			continue
@@ -151,11 +152,11 @@ func GetColumnsAndValuesFromStruct(ctx context.Context, st interface{}, callOpts
 			continue
 		}
 
-		if dbKey == "-" || len(dbKey) == 0 || (len(opt.selectFields) > 0 && !utils.IsStringSliceContains(opt.selectFields, dbKey)) {
+		if dbKey == "-" || len(dbKey) == 0 || (len(opt.selectFields) > 0 && !utils.IsSliceContains(opt.selectFields, dbKey)) {
 			continue
 		}
 
-		if len(opt.ignoreFields) > 0 && utils.IsStringSliceContains(opt.ignoreFields, dbKey) {
+		if len(opt.ignoreFields) > 0 && utils.IsSliceContains(opt.ignoreFields, dbKey) {
 			continue
 		}
 
@@ -178,7 +179,7 @@ func ParseColumnsForSelect(cols []string) []string {
 
 func ParseColumnsForSelectWithAlias(cols []string, alias string) []string {
 	for i, v := range cols {
-		if utils.IsStringSliceContains([]string{"_count"}, v) {
+		if utils.IsSliceContains([]string{"_count"}, v) {
 			switch v {
 			case "_count":
 				cols[i] = "count(*) over() as _count"
@@ -212,14 +213,14 @@ func getKeyFromTag(tag string) string {
 	return pieces[0]
 }
 
-func BindCommonParamsToSelectBuilder(builder squirrel.SelectBuilder, params defines.CommonParamsForFetch) squirrel.SelectBuilder {
-	limit := defines.DefaultPerPage
+func BindCommonParamsToSelectBuilder(builder squirrel.SelectBuilder, params contexts.CommonParamsForFetch) squirrel.SelectBuilder {
+	limit := constants.DefaultPerPage
 	if params.Limit > 0 {
 		limit = params.Limit
 	}
 
-	if limit > defines.MaximumPerPage {
-		limit = defines.DefaultPerPage
+	if limit > constants.MaximumPerPage {
+		limit = constants.DefaultPerPage
 	}
 
 	offset := uint64(0)
