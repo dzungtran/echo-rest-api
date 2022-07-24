@@ -25,7 +25,7 @@ func NewKratosHookHandler(g *echo.Group, middManager *middlewares.MiddlewareMana
 		UserUC: userUsecase,
 	}
 
-	apiV1 := g.Group("/hooks/kratos", middManager.KratosWebhookAuth)
+	apiV1 := g.Group("hooks/kratos", middManager.KratosWebhookAuth)
 	apiV1.POST("/after-registration", wrapper.Wrap(handler.AfterRegistration))
 	apiV1.POST("/after-settings", wrapper.Wrap(handler.AfterSettings))
 }

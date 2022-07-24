@@ -59,7 +59,7 @@ func (u *orgUsecase) Create(ctx context.Context, req dto.CreateOrgReq) (org *dom
 	}
 
 	copier.Copy(org, req)
-	org.Code = utils.GenerateUUID()
+	org.Code = utils.GenerateLongUUID()
 
 	// Start transaction
 	tx, err := u.sqlxTrans.Init()

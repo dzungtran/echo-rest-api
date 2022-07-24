@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/dzungtran/echo-rest-api/config"
@@ -168,7 +169,14 @@ func (m MiddlewareManager) CheckPoliciesWithProject() echo.MiddlewareFunc {
 func (m MiddlewareManager) CheckPoliciesWithRequestPayload(payloadInst interface{}) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if err := c.Bind(&payloadInst); err != nil {
+
+			if reflect.ValueOf(payloadInst).Kind() != reflect.Ptr {
+				return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+					"error": "payload should be a pointer",
+				})
+			}
+
+			if err := c.Bind(payloadInst); err != nil {
 				return c.JSON(http.StatusBadRequest, map[string]interface{}{
 					"error": err.Error(),
 				})

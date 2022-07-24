@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dzungtran/echo-rest-api/modules/projects/domains"
 	"github.com/dzungtran/echo-rest-api/modules/projects/dto"
 	"github.com/dzungtran/echo-rest-api/modules/projects/usecases"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
@@ -24,9 +25,9 @@ func NewProjectHandler(g *echo.Group, middManager *middlewares.MiddlewareManager
 		ProjectUC: projectUsecase,
 	}
 
-	apiV1 := g.Group("admin/projects", middManager.Auth(), middManager.CheckPolicies())
-	apiV1.GET("", wrapper.Wrap(handler.Fetch), middManager.CheckPoliciesWithRequestPayload(dto.SearchProjectsReq{})).Name = "list:project"
-	apiV1.POST("", wrapper.Wrap(handler.Create), middManager.CheckPoliciesWithRequestPayload(dto.CreateProjectReq{})).Name = "create:project"
+	apiV1 := g.Group("admin/projects", middManager.Auth())
+	apiV1.GET("", wrapper.Wrap(handler.Fetch), middManager.CheckPoliciesWithRequestPayload(&dto.SearchProjectsReq{})).Name = "list:project"
+	apiV1.POST("", wrapper.Wrap(handler.Create), middManager.CheckPoliciesWithRequestPayload(&dto.CreateProjectReq{})).Name = "create:project"
 
 	apiV1Resource := g.Group("admin/projects/:projectId",
 		middManager.Auth(),
@@ -41,10 +42,10 @@ func NewProjectHandler(g *echo.Group, middManager *middlewares.MiddlewareManager
 // Create will store the Project by given request body
 func (h *ProjectHandler) Create(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
+	var err error
 
 	payload := c.Get(constants.ContextKeyPayload)
-	req, ok := payload.(dto.CreateProjectReq)
-
+	req, ok := payload.(*dto.CreateProjectReq)
 	if !ok {
 		return wrapper.Response{
 			Status: http.StatusBadRequest,
@@ -52,14 +53,15 @@ func (h *ProjectHandler) Create(c echo.Context) wrapper.Response {
 		}
 	}
 
-	if _, err := h.ProjectUC.Create(ctx, req); err != nil {
+	var proj *domains.Project
+	if proj, err = h.ProjectUC.Create(ctx, *req); err != nil {
 		return wrapper.Response{
 			Status: http.StatusInternalServerError,
 			Error:  utils.NewError(err, ""),
 		}
 	}
 
-	return wrapper.Response{Status: http.StatusCreated}
+	return wrapper.Response{Status: http.StatusCreated, Data: proj}
 }
 
 // GetByID will get Project by given id
