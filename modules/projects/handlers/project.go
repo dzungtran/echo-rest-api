@@ -9,6 +9,7 @@ import (
 	"github.com/dzungtran/echo-rest-api/modules/projects/usecases"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
 	"github.com/dzungtran/echo-rest-api/pkg/contexts"
+	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/middlewares"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/dzungtran/echo-rest-api/pkg/wrapper"
@@ -55,9 +56,10 @@ func (h *ProjectHandler) Create(c echo.Context) wrapper.Response {
 
 	var proj *domains.Project
 	if proj, err = h.ProjectUC.Create(ctx, *req); err != nil {
+		logger.Log().Errorw("Error while create project", "error", err.Error())
 		return wrapper.Response{
-			Status: http.StatusInternalServerError,
-			Error:  utils.NewError(err, ""),
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
+			Error:  err,
 		}
 	}
 
@@ -76,7 +78,7 @@ func (h *ProjectHandler) GetByID(c echo.Context) wrapper.Response {
 func (h *ProjectHandler) Fetch(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	payload := c.Get(constants.ContextKeyPayload)
-	req, ok := payload.(dto.SearchProjectsReq)
+	req, ok := payload.(*dto.SearchProjectsReq)
 	if !ok {
 		return wrapper.Response{
 			Status: http.StatusBadRequest,
@@ -84,11 +86,11 @@ func (h *ProjectHandler) Fetch(c echo.Context) wrapper.Response {
 		}
 	}
 
-	projects, count, err := h.ProjectUC.Fetch(ctx, req)
+	projects, count, err := h.ProjectUC.Fetch(ctx, *req)
 	if err != nil {
 		return wrapper.Response{
 			Error:  err,
-			Status: http.StatusInternalServerError,
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
 		}
 	}
 
@@ -104,15 +106,17 @@ func (h *ProjectHandler) Update(c echo.Context) wrapper.Response {
 	var err error
 	ctx := c.Request().Context()
 
-	var req dto.UpdateProjectReq
-	if err = c.Bind(&req); err != nil {
+	payload := c.Get(constants.ContextKeyPayload)
+	req, ok := payload.(*dto.UpdateProjectReq)
+	if !ok {
 		return wrapper.Response{
-			Status: http.StatusUnprocessableEntity,
-			Error:  utils.NewError(err, ""),
+			Status: http.StatusBadRequest,
+			Error:  fmt.Errorf("invalid payload"),
 		}
 	}
 
-	if err := h.ProjectUC.Update(ctx, req.ID, req); err != nil {
+	if err = h.ProjectUC.Update(ctx, req.ID, *req); err != nil {
+		logger.Log().Errorw("Error while create project", "error", err.Error())
 		if err == constants.ErrNotFound {
 			return wrapper.Response{
 				Status: http.StatusNotFound,
@@ -121,7 +125,7 @@ func (h *ProjectHandler) Update(c echo.Context) wrapper.Response {
 		}
 		return wrapper.Response{
 			Error:  err,
-			Status: http.StatusInternalServerError,
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
 		}
 	}
 
@@ -135,14 +139,8 @@ func (h *ProjectHandler) Delete(c echo.Context) wrapper.Response {
 	id := utils.GetResourceIdFromParam(c, "projectId")
 
 	if err = h.ProjectUC.Delete(ctx, id); err != nil {
-		if err == constants.ErrNotFound {
-			return wrapper.Response{
-				Status: http.StatusNotFound,
-				Error:  utils.NewNotFoundError(),
-			}
-		}
 		return wrapper.Response{
-			Status: http.StatusInternalServerError,
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
 			Error:  utils.NewError(err, ""),
 		}
 	}

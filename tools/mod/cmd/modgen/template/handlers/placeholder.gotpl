@@ -24,25 +24,25 @@ func New{{ .SingularName }}Handler(g *echo.Group, middManager *middlewares.Middl
 	}
 
 	apiV1 := g.Group("admin/{{ .PluralName | ToKebab }}", middManager.Auth(), middManager.CheckPolicies())
-	apiV1.GET("", wrapper.Wrap(handler.Fetch), middManager.CheckPoliciesWithRequestPayload(dto.Search{{ .PluralName }}Req{})).Name = "list:{{ .SingularName | ToLowerCamel }}"
-	apiV1.POST("", wrapper.Wrap(handler.Create), middManager.CheckPoliciesWithRequestPayload(dto.Create{{ .SingularName }}Req{})).Name = "create:{{ .SingularName | ToLowerCamel }}"
+	apiV1.GET("", wrapper.Wrap(handler.Fetch), middManager.CheckPoliciesWithRequestPayload(&dto.Search{{ .PluralName }}Req{})).Name = "list:{{ .SingularName | ToLowerCamel }}"
+	apiV1.POST("", wrapper.Wrap(handler.Create), middManager.CheckPoliciesWithRequestPayload(&dto.Create{{ .SingularName }}Req{})).Name = "create:{{ .SingularName | ToLowerCamel }}"
 
 	apiV1Resource := g.Group("admin/{{ .PluralName | ToKebab }}/:{{ .SingularName | ToLowerCamel }}Id",
 		middManager.Auth(),
 		middlewares.RequireResourceIdInParam("{{ .SingularName | ToLowerCamel }}Id"),
 	)
 	apiV1Resource.GET("", wrapper.Wrap(handler.GetByID)).Name = "read:{{ .SingularName | ToLowerCamel }}"
-	apiV1Resource.PUT("", wrapper.Wrap(handler.Update)).Name = "update:{{ .SingularName | ToLowerCamel }}"
+	apiV1Resource.PUT("", wrapper.Wrap(handler.Update), middlewares.BindRequestPayload(&dto.Update{{ .SingularName }}Req{})).Name = "update:{{ .SingularName | ToLowerCamel }}"
 	apiV1Resource.DELETE("", wrapper.Wrap(handler.Delete)).Name = "delete:{{ .SingularName | ToLowerCamel }}"
 }
 
 // Create will store the {{ .SingularName }} by given request body
 func (h *{{ .SingularName }}Handler) Create(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
+	var err error
 
 	payload := c.Get(constants.ContextKeyPayload)
 	req, ok := payload.(dto.Create{{ .SingularName }}Req)
-
 	if !ok {
 		return wrapper.Response{
 			Status: http.StatusBadRequest,
@@ -50,14 +50,15 @@ func (h *{{ .SingularName }}Handler) Create(c echo.Context) wrapper.Response {
 		}
 	}
 
-	if _, err := h.{{ .SingularName | ToLowerCamel }}UC.Create(ctx, req); err != nil {
+	var data *domains.{{ .SingularName }}
+	if data, err = h.{{ .SingularName | ToLowerCamel }}UC.Create(ctx, req); err != nil {
 		return wrapper.Response{
-			Status: http.StatusInternalServerError,
-			Error:  utils.NewError(err, ""),
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
+			Error:  err,
 		}
 	}
 
-	return wrapper.Response{Status: http.StatusCreated}
+	return wrapper.Response{Status: http.StatusCreated, Data: data}
 }
 
 // GetByID will get {{ .SingularName }} by given id
@@ -93,7 +94,7 @@ func (h *{{ .SingularName }}Handler) Fetch(c echo.Context) wrapper.Response {
 	if err != nil {
 		return wrapper.Response{
 			Error:  err,
-			Status: http.StatusInternalServerError,
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
 		}
 	}
 
@@ -109,15 +110,16 @@ func (h *{{ .SingularName }}Handler) Update(c echo.Context) wrapper.Response {
 	var err error
 	ctx := c.Request().Context()
 
-	var req dto.Update{{ .SingularName }}Req
-	if err = c.Bind(&req); err != nil {
+	payload := c.Get(constants.ContextKeyPayload)
+	req, ok := payload.(*dto.Update{{ .SingularName }}Req)
+	if !ok {
 		return wrapper.Response{
-			Status: http.StatusUnprocessableEntity,
-			Error:  utils.NewError(err, ""),
+			Status: http.StatusBadRequest,
+			Error:  fmt.Errorf("invalid payload"),
 		}
 	}
 
-	if err := h.{{ .SingularName | ToLowerCamel }}UC.Update(ctx, req.ID, req); err != nil {
+	if err = h.{{ .SingularName | ToLowerCamel }}UC.Update(ctx, req.ID, req); err != nil {
 		if err == constants.ErrNotFound {
 			return wrapper.Response{
 				Status: http.StatusNotFound,
@@ -126,7 +128,7 @@ func (h *{{ .SingularName }}Handler) Update(c echo.Context) wrapper.Response {
 		}
 		return wrapper.Response{
 			Error:  err,
-			Status: http.StatusInternalServerError,
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
 		}
 	}
 
@@ -147,8 +149,8 @@ func (h *{{ .SingularName }}Handler) Delete(c echo.Context) wrapper.Response {
 			}
 		}
 		return wrapper.Response{
-			Status: http.StatusInternalServerError,
-			Error:  utils.NewError(err, ""),
+			Status: utils.GetHttpStatusCodeByErrorType(err, http.StatusInternalServerError),
+			Error:  err,
 		}
 	}
 

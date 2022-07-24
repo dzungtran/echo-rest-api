@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"net/http"
+
 	cueErrors "cuelang.org/go/cue/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -90,4 +92,21 @@ func IsDuplicatedError(err error) bool {
 	}
 
 	return false
+}
+
+func GetHttpStatusCodeByErrorType(err error, defaultCode int) int {
+	switch err.(type) {
+	case *pq.Error:
+		return http.StatusInternalServerError
+	case cueErrors.Error:
+	case validator.ValidationErrors:
+		return http.StatusBadRequest
+
+	}
+
+	if defaultCode > 0 {
+		return defaultCode
+	}
+
+	return http.StatusInternalServerError
 }
