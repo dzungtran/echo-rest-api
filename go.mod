@@ -17,7 +17,7 @@ require (
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/lib/pq v1.10.6
 	github.com/lithammer/shortuuid/v4 v4.0.0
-	github.com/open-policy-agent/opa v0.42.2
+	github.com/open-policy-agent/opa v0.43.0
 	github.com/ory/kratos-client-go v0.10.1
 	github.com/spf13/cobra v1.5.0
 	github.com/stretchr/testify v1.8.0
