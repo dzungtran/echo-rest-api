@@ -73,7 +73,7 @@ const docTemplate = `{
                 },
                 "email": {
                     "type": "string",
-                    "example": "email@epass.one"
+                    "example": "email@api.com"
                 },
                 "first_name": {
                     "description": "User first name",

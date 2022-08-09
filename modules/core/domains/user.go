@@ -29,7 +29,7 @@ type User struct {
 	LastName string `json:"last_name" db:"last_name" example:"Tran"`
 	// User last name
 	Code      string     `json:"code" db:"code" example:"95a8d1aa-xxx-xxx-0c15d41"`
-	Email     string     `json:"email" db:"email" example:"email@epass.one"`
+	Email     string     `json:"email" db:"email" example:"email@api.com"`
 	Phone     string     `json:"phone" db:"phone" example:"+84 0986415xxxx"`
 	Status    UserStatus `json:"status" db:"status" example:"active" enums:"active,deactivated,banned"`
 	CreatedAt time.Time  `json:"created_at" db:"created_at"`
