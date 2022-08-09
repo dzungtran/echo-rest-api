@@ -9,13 +9,29 @@ import (
 
 	"github.com/dzungtran/echo-rest-api/cmd/api/di"
 	"github.com/dzungtran/echo-rest-api/config"
+	_ "github.com/dzungtran/echo-rest-api/docs"
 	"github.com/dzungtran/echo-rest-api/infrastructure/datastore"
 	"github.com/dzungtran/echo-rest-api/migrations"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+// @title Echo REST API
+// @version 1.0
+// @description This documentation for Echo REST server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Dzung Tran
+// @contact.url https://docs.api.com/support
+// @contact.email support@api.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host docs.api.com
+// @BasePath /
 func main() {
 	// init app config
 	conf, _ := config.InitAppConfig()
@@ -69,10 +85,7 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	// err = di.RegisterHandlers(e, container)
-	// if err != nil {
-	// 	e.Logger.Fatal(err)
-	// }
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	// Start server
 	go func() {

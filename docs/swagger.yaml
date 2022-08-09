@@ -1,0 +1,75 @@
+basePath: /
+definitions:
+  domains.User:
+    description: User account information
+    properties:
+      code:
+        description: User last name
+        example: 95a8d1aa-xxx-xxx-0c15d41
+        type: string
+      created_at:
+        type: string
+      email:
+        example: email@api.com
+        type: string
+      first_name:
+        description: User first name
+        example: Dzung
+        type: string
+      id:
+        description: User indetifier number
+        example: 1
+        type: integer
+      last_name:
+        description: User last name
+        example: Tran
+        type: string
+      phone:
+        example: +84 0986415xxxx
+        type: string
+      status:
+        enum:
+        - active
+        - deactivated
+        - banned
+        example: active
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: docs.api.com
+info:
+  contact:
+    email: support@api.com
+    name: Dzung Tran
+    url: https://docs.api.com/support
+  description: This documentation for Echo REST server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Echo REST API
+  version: "1.0"
+paths:
+  /users/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Get user info ID
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domains.User'
+      summary: Get user info
+      tags:
+      - users
+swagger: "2.0"

@@ -4,7 +4,7 @@ start
 :User who completed 
 registration on Kratos UI;
 :Kratos server will send a webhook 
-to **wepass-core**;
+to **api-one**;
 partition "**webhook** AfterRegistration" {
     if (Check user \nemail existing?) is (yes) then
         :Update user code to 
