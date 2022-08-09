@@ -60,7 +60,15 @@ func (h *UserHandler) Create(c echo.Context) wrapper.Response {
 	return wrapper.Response{Status: http.StatusCreated, Data: user}
 }
 
-// GetByID will get user by given id
+// GetUserInfo godoc
+// @Summary      Get user info
+// @Description  Get user info ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        userId   path      int  true  "User ID"
+// @Success      200  {object}  domains.User
+// @Router       /users/{userId} [get]
 func (h *UserHandler) GetByID(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	id, err := strconv.Atoi(c.Param("userId"))

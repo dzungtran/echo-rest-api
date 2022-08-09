@@ -18,14 +18,20 @@ const (
 	UserStatusInvited UserStatus = "invited"
 )
 
+// User domain info
+// @Description User account information
 type User struct {
-	Id        int64      `json:"id" db:"id"`
-	FirstName string     `json:"first_name" db:"first_name"`
-	LastName  string     `json:"last_name" db:"last_name"`
-	Code      string     `json:"code" db:"code"`
-	Email     string     `json:"email" db:"email"`
-	Phone     string     `json:"phone" db:"phone"`
-	Status    UserStatus `json:"status" db:"status"`
+	// User indetifier number
+	Id int64 `json:"id" db:"id" example:"1"`
+	// User first name
+	FirstName string `json:"first_name" db:"first_name" example:"Dzung"`
+	// User last name
+	LastName string `json:"last_name" db:"last_name" example:"Tran"`
+	// User last name
+	Code      string     `json:"code" db:"code" example:"95a8d1aa-xxx-xxx-0c15d41"`
+	Email     string     `json:"email" db:"email" example:"email@epass.one"`
+	Phone     string     `json:"phone" db:"phone" example:"+84 0986415xxxx"`
+	Status    UserStatus `json:"status" db:"status" example:"active" enums:"active,deactivated,banned"`
 	CreatedAt time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
 }

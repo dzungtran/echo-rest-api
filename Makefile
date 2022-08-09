@@ -28,7 +28,12 @@ mock:
 	mockery --all
 
 setup:
-	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest 
+	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	go install github.com/swaggo/swag/cmd/swag@latest
+
+docs:
+	swag i --dir ./cmd/api/,\
+	./modules/
 
 git-hooks:
 	echo "Installing hooks..." && \
@@ -40,4 +45,4 @@ git-hooks:
 routes:
 	go run ./tools/routes/
 
-.PHONY: routes run-api run-db build-api migration-create
+.PHONY: routes run-api run-db build-api migration-create docs

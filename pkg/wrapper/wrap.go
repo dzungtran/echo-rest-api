@@ -16,6 +16,14 @@ const (
 	MetadataField = "metadata"
 )
 
+// For API docs
+type (
+	SuccessResponse struct {
+		Data     interface{}            `json:"data"`
+		Metadata map[string]interface{} `json:"metadata"`
+	}
+)
+
 // Response body
 type Response struct {
 	Error        error
@@ -27,7 +35,6 @@ type Response struct {
 
 type EchoHandlerFunc func(c echo.Context) Response
 
-// Wrap return new gin.HandlerFunc by GinHandlerFn
 func Wrap(fn EchoHandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// handle request
