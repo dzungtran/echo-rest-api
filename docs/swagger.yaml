@@ -10,7 +10,7 @@ definitions:
       created_at:
         type: string
       email:
-        example: email@epass.one
+        example: email@api.com
         type: string
       first_name:
         description: User first name
