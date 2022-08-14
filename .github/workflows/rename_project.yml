@@ -9,7 +9,7 @@ jobs:
     if: ${{ !contains (github.repository, '/echo-rest-api') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           # by default, it uses a depth of 1
           # this fetches all history so that we can read each commit
@@ -34,9 +34,8 @@ jobs:
         run: |
           echo "Renaming the project with -a(author) ${{ env.REPOSITORY_OWNER }} -n(name) ${{ env.REPOSITORY_NAME }} -u(urlname) ${{ env.REPOSITORY_URLNAME }}"
           .github/rename_project.sh -a ${{ env.REPOSITORY_OWNER }} -n ${{ env.REPOSITORY_NAME }} -u ${{ env.REPOSITORY_URLNAME }} -d "Awesome ${{ env.REPOSITORY_NAME }} created by ${{ env.REPOSITORY_OWNER }}"
-              
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Ready to use and code."
-          # commit_options: '--amend --no-edit'
-          push_options: --force
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Ready to use and code."
+          git push
