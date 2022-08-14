@@ -23,6 +23,10 @@ original_description="project_description"
 # for filename in $(find . -name "*.*") 
 for filename in $(git ls-files) 
 do
+    if [[ $filename == .github/workflows/* ]]; then
+        echo "Ignored $filename"
+        continue
+    fi
     sed -i "s/$original_author/$author/g" $filename
     sed -i "s/$original_name/$name/g" $filename
     sed -i "s/$original_urlname/$urlname/g" $filename
