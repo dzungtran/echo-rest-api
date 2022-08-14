@@ -24,6 +24,19 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 <!-- tocstop -->
 
+## HOW TO USE THIS TEMPLATE
+
+> **DO NOT FORK** this is meant to be used from **[Use this template](https://github.com/dzungtran/echo-rest-api/generate)** feature.
+
+1. Click on **[Use this template](https://github.com/dzungtran/echo-rest-api/generate)**
+2. Give a name to your project  
+   (e.g. `my_awesome_project` recommendation is to use all lowercase and underscores separation for repo names.)
+3. Wait until the first run of CI finishes  
+   (Github Actions will process the template and commit to your new repo)
+4. Then clone your new project and happy coding!
+
+> **NOTE**: **WAIT** until first CI run on github actions before cloning your new project.
+
 ## Overview
 
 ![Request processing flow - Sequence Diagram](out/docs/diagrams/overview/request_flow.svg)
@@ -40,6 +53,7 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 - [x] Role based access control using [Open Policy Agent](https://github.com/open-policy-agent/opa).
 - [x] Module generation, quickly create model, usecase, api handler.
 - [x] CLI support. try: `go run ./tools/mod/ gen` using [spf13/cobra](https://github.com/spf13/cobra).
+- [x] Generate API docs using [swaggo](https://github.com/swaggo/swag). Try: `make docs`.
 
 ## Running the project
 
@@ -82,6 +96,7 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | `make migration-create [migration_name]` | Create migration files. migration_name should be snake case |
 | `make git-hooks`                         | Setup git hooks                                             |
 | `make routes`                            | Generate routes file for authorization                      |
+| `make docs`                              | Generate API docs                                           |
 
 ## Folder structure
 
@@ -133,5 +148,6 @@ Create a PR with relevant information if you want to contribute in this template
 
 - [x] Update docker compose for ory/kratos.
 - [x] Update README.md.
+- [x] Update API docs.
 - [ ] Write more tests.
 - [ ] Add support Heroku.

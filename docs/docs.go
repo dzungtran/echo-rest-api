@@ -51,7 +51,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domains.User"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/wrapper.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/domains.User"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -105,6 +117,17 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "wrapper.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "metadata": {},
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         }

@@ -19,8 +19,14 @@ const (
 // For API docs
 type (
 	SuccessResponse struct {
-		Data     interface{}            `json:"data"`
-		Metadata map[string]interface{} `json:"metadata"`
+		Success  bool        `json:"success" example:"true"`
+		Data     interface{} `json:"data"`
+		Metadata interface{} `json:"metadata"`
+	}
+
+	FailResponse struct {
+		Success bool   `json:"success" example:"false"`
+		Message string `json:"message" example:"Example message"`
 	}
 )
 

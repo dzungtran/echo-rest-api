@@ -33,7 +33,9 @@ setup:
 
 docs:
 	swag i --dir ./cmd/api/,\
-	./modules/
+	./modules/,\
+	./pkg/wrapper,\
+	./pkg/contexts
 
 git-hooks:
 	echo "Installing hooks..." && \

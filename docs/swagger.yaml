@@ -37,6 +37,14 @@ definitions:
       updated_at:
         type: string
     type: object
+  wrapper.SuccessResponse:
+    properties:
+      data: {}
+      metadata: {}
+      success:
+        example: true
+        type: boolean
+    type: object
 host: docs.api.com
 info:
   contact:
@@ -68,7 +76,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/domains.User'
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.User'
+              type: object
       summary: Get user info
       tags:
       - users

@@ -67,7 +67,7 @@ func (h *UserHandler) Create(c echo.Context) wrapper.Response {
 // @Accept       json
 // @Produce      json
 // @Param        userId   path      int  true  "User ID"
-// @Success      200  {object}  domains.User
+// @Success      200  {object}  wrapper.SuccessResponse{data=domains.User}
 // @Router       /users/{userId} [get]
 func (h *UserHandler) GetByID(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
