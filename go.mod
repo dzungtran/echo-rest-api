@@ -25,7 +25,7 @@ require (
 	github.com/swaggo/swag v1.8.4
 	github.com/tidwall/gjson v1.14.1
 	github.com/tidwall/sjson v1.2.4
-	go.uber.org/dig v1.14.1
+	go.uber.org/dig v1.15.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75
 	gopkg.in/yaml.v2 v2.4.0
