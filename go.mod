@@ -14,7 +14,7 @@ require (
 	github.com/jackc/pgx/v4 v4.17.1
 	github.com/jinzhu/copier v0.3.5
 	github.com/jmoiron/sqlx v1.3.5
-	github.com/labstack/echo/v4 v4.8.0
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/lib/pq v1.10.6
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/open-policy-agent/opa v0.43.1
