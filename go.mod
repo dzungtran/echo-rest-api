@@ -21,7 +21,7 @@ require (
 	github.com/ory/kratos-client-go v0.11.1
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
-	github.com/swaggo/echo-swagger v1.3.4
+	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.5
 	github.com/tidwall/gjson v1.14.3
 	github.com/tidwall/sjson v1.2.5
