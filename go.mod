@@ -18,7 +18,7 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/open-policy-agent/opa v0.48.0
-	github.com/ory/kratos-client-go v0.10.1
+	github.com/ory/kratos-client-go v0.11.1
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/echo-swagger v1.3.4
@@ -87,7 +87,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/oauth2 v0.0.0-20220808172628-8227340efae7 // indirect
+	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
