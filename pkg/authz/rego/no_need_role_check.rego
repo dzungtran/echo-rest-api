@@ -34,6 +34,16 @@ no_need_role_check_user_endpoint[act] {
 	}
 }
 
+no_need_role_check_user_endpoint[act] {
+	# Get current user info
+	input.endpoint = "/me"
+	input.method = "GET"
+	act = {
+		"endpoint": input.endpoint,
+		"method": input.method,
+	}
+}
+
 no_need_role_check_org_endpoint[act] {
 	# Get list org
 	input.endpoint = "/admin/orgs"

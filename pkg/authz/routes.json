@@ -28,5 +28,8 @@
     "DELETE": "delete:user",
     "GET": "read:user",
     "PUT": "update:user"
+  },
+  "/me": {
+    "GET": "read:me"
   }
 }

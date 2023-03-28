@@ -4,17 +4,16 @@ import (
 	"context"
 	"net/http"
 	"reflect"
-	"strings"
 
 	"github.com/dzungtran/echo-rest-api/config"
 	"github.com/dzungtran/echo-rest-api/modules/core/domains"
 	coreRepo "github.com/dzungtran/echo-rest-api/modules/core/repositories"
+	"github.com/dzungtran/echo-rest-api/modules/core/usecases"
 	projectRepo "github.com/dzungtran/echo-rest-api/modules/projects/repositories"
 	"github.com/dzungtran/echo-rest-api/pkg/authz"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
 	"github.com/dzungtran/echo-rest-api/pkg/contexts"
 	"github.com/dzungtran/echo-rest-api/pkg/kratos"
-	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/labstack/echo/v4"
 	ory "github.com/ory/kratos-client-go"
@@ -23,62 +22,73 @@ import (
 // MiddlewareManager ...
 // This file contains common functions for auth
 type MiddlewareManager struct {
-	appConf      *config.AppConfig
-	userRepo     coreRepo.UserRepository
-	userOrgRepo  coreRepo.UserOrgRepository
-	projectRepo  projectRepo.ProjectRepository
-	orgRepo      coreRepo.OrgRepository
+	appConf *config.AppConfig
+
+	userRepo    coreRepo.UserRepository
+	userOrgRepo coreRepo.UserOrgRepository
+	orgRepo     coreRepo.OrgRepository
+	projectRepo projectRepo.ProjectRepository
+
+	userUC       usecases.UserUsecase
 	kratosClient *ory.APIClient
 }
 
 // NewMiddlewareManager will create new an MiddlewareManager object
 func NewMiddlewareManager(
 	appConf *config.AppConfig,
+
 	userRepo coreRepo.UserRepository,
 	userOrgRepo coreRepo.UserOrgRepository,
-	projectRepo projectRepo.ProjectRepository,
 	orgRepo coreRepo.OrgRepository,
+	projectRepo projectRepo.ProjectRepository,
+
+	userUC usecases.UserUsecase,
 ) *MiddlewareManager {
 	return &MiddlewareManager{
 		appConf:      appConf,
 		userRepo:     userRepo,
 		userOrgRepo:  userOrgRepo,
-		projectRepo:  projectRepo,
 		orgRepo:      orgRepo,
+		userUC:       userUC,
 		kratosClient: kratos.NewKratosSelfHostedClient(appConf.KratosApiEndpoint, appConf.Environment == "development"),
 	}
 }
 
 func (m MiddlewareManager) Auth() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		if m.appConf.Environment != "local" {
-			// current just support Kratos Authn
+
+		switch m.appConf.AuthProvider {
+		case "kratos":
 			return m.KratosAuth(next)
+		default:
+			// Default auth method
+			return m.FireBaseAuth(next)
 		}
 
 		// Default auth here for local debug and development
 		// Bypass auth
-		return func(c echo.Context) error {
-			ctx := c.Request().Context()
-			email := c.Request().Header.Get(constants.HeaderXUserEmail)
 
-			u, err := m.fetchUserFromAuth(ctx, "", email)
-			if err != nil {
-				logger.Log().Errorw("error while fetch user for auth", "email", strings.ReplaceAll(email, "\n", ""), "error", err)
-				return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-					"error": "cannot fetch user",
-				})
-			}
+		// return func(c echo.Context) error {
+		// 	ctx := c.Request().Context()
+		// 	email := c.Request().Header.Get(constants.HeaderXUserEmail)
 
-			if u.Status != domains.UserStatusActive {
-				return c.JSON(http.StatusUnauthorized, map[string]interface{}{
-					"error": "user is not active",
-				})
-			}
+		// 	u, err := m.fetchUserFromAuth(ctx, "", email)
+		// 	if err != nil {
+		// 		logger.Log().Errorw("error while fetch user for auth", "email", strings.ReplaceAll(email, "\n", ""), "error", err)
+		// 		return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+		// 			"error": "cannot fetch user",
+		// 		})
+		// 	}
 
-			c.Set(constants.ContextKeyUser, u)
-			return next(c)
-		}
+		// 	if u.Status != domains.UserStatusActive {
+		// 		return c.JSON(http.StatusUnauthorized, map[string]interface{}{
+		// 			"error": "user is not active",
+		// 		})
+		// 	}
+
+		// 	c.Set(constants.ContextKeyUser, u)
+		// 	return next(c)
+		// }
 	}
 }
 
@@ -176,13 +186,28 @@ func (m MiddlewareManager) CheckPoliciesWithRequestPayload(payloadInst interface
 				})
 			}
 
-			if err := c.Bind(payloadInst); err != nil {
-				return c.JSON(http.StatusBadRequest, map[string]interface{}{
-					"error": err.Error(),
+			currPayload := c.Get(constants.ContextKeyPayload)
+			if currPayload == nil {
+				if err := c.Bind(payloadInst); err != nil {
+					return c.JSON(http.StatusBadRequest, map[string]interface{}{
+						"error": err.Error(),
+					})
+				}
+			} else {
+				payloadInst = currPayload
+			}
+
+			denyMsg, err := authz.CheckPoliciesContext(c, authz.WithInputExtraData("payload", payloadInst))
+			if err != nil {
+				msg := err.Error()
+				if len(denyMsg) > 0 {
+					msg = denyMsg[0]
+				}
+				return c.JSON(http.StatusForbidden, map[string]interface{}{
+					"error": msg,
 				})
 			}
 
-			c.Set(constants.ContextKeyPayload, payloadInst)
 			return next(c)
 		}
 	}

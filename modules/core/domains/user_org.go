@@ -18,8 +18,8 @@ type UserOrg struct {
 	Id        int64       `json:"id" db:"id"`
 	UserId    int64       `json:"user_id" db:"user_id"`
 	OrgId     int64       `json:"org_id" db:"org_id"`
-	Role      UserOrgRole `json:"role" db:"role"`
-	Status    UserStatus  `json:"status" db:"status"`
+	Role      UserOrgRole `json:"role" db:"role" example:"owner" enums:"owner,manager,editor,viewer,guest"`
+	Status    UserStatus  `json:"status" db:"status" example:"active" enums:"active"`
 	CreatedAt time.Time   `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at" db:"updated_at"`
 }

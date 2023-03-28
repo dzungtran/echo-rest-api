@@ -1,9 +1,12 @@
 package di
 
 import (
+	"io/fs"
+
 	"github.com/dzungtran/echo-rest-api/config"
 	"github.com/dzungtran/echo-rest-api/infrastructure/datastore"
 	"github.com/dzungtran/echo-rest-api/modules/core"
+	coreTemplates "github.com/dzungtran/echo-rest-api/modules/core/handlers/templates"
 	"github.com/dzungtran/echo-rest-api/modules/projects"
 	"github.com/dzungtran/echo-rest-api/pkg/logger"
 	"github.com/dzungtran/echo-rest-api/pkg/middlewares"
@@ -69,4 +72,8 @@ func RegisterModules(e *echo.Echo, container *dig.Container) error {
 	}
 
 	return err
+}
+
+func GetCoreTemplates() fs.FS {
+	return coreTemplates.CoreTemplates
 }

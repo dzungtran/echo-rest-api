@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/dzungtran/echo-rest-api/config"
 	"github.com/dzungtran/echo-rest-api/modules/core/handlers"
 	"github.com/dzungtran/echo-rest-api/modules/core/repositories"
 	"github.com/dzungtran/echo-rest-api/modules/core/usecases"
@@ -28,6 +29,7 @@ func (coreModule) RegisterUseCases(container *dig.Container) error {
 
 func (coreModule) RegisterHandlers(g *echo.Group, container *dig.Container) error {
 	return container.Invoke(func(
+		appConf *config.AppConfig,
 		middManager *middlewares.MiddlewareManager,
 		userUsecase usecases.UserUsecase,
 		orgUsecase usecases.OrgUsecase,
@@ -35,5 +37,6 @@ func (coreModule) RegisterHandlers(g *echo.Group, container *dig.Container) erro
 		handlers.NewOrgHandler(g, middManager, orgUsecase)
 		handlers.NewUserHandler(g, middManager, userUsecase)
 		handlers.NewKratosHookHandler(g, middManager, userUsecase)
+		handlers.NewAuthHandler(g, middManager, userUsecase, appConf)
 	})
 }

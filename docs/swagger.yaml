@@ -1,5 +1,24 @@
 basePath: /
 definitions:
+  domains.Org:
+    properties:
+      code:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      id:
+        type: integer
+      logo:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   domains.User:
     description: User account information
     properties:
@@ -28,13 +47,37 @@ definitions:
         example: +84 0986415xxxx
         type: string
       status:
+        allOf:
+        - $ref: '#/definitions/domains.UserStatus'
         enum:
         - active
         - deactivated
         - banned
         example: active
-        type: string
       updated_at:
+        type: string
+    type: object
+  domains.UserStatus:
+    enum:
+    - active
+    - deactivated
+    - banned
+    - invited
+    type: string
+    x-enum-varnames:
+    - UserStatusActive
+    - UserStatusDeactivated
+    - UserStatusBanned
+    - UserStatusInvited
+  dto.UpdateUserReq:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      status:
         type: string
     type: object
   wrapper.SuccessResponse:
@@ -45,7 +88,6 @@ definitions:
         example: true
         type: boolean
     type: object
-host: docs.api.com
 info:
   contact:
     email: support@api.com
@@ -59,11 +101,152 @@ info:
   title: Echo REST API
   version: "1.0"
 paths:
-  /users/{userId}:
+  /admin/orgs:
     get:
       consumes:
       - application/json
-      description: Get user info ID
+      description: Get list org
+      parameters:
+      - description: Number of records should be returned
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domains.Org'
+                  type: array
+              type: object
+      security:
+      - XFirebaseBearer: []
+      summary: Get list org
+      tags:
+      - orgs
+    post:
+      consumes:
+      - application/json
+      description: Create a new org
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.Org'
+              type: object
+      security:
+      - XFirebaseBearer: []
+      summary: Create a new org
+      tags:
+      - orgs
+  /admin/orgs/{orgId}:
+    get:
+      consumes:
+      - application/json
+      description: Get org info by ID
+      parameters:
+      - description: Org ID
+        in: path
+        name: orgId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.Org'
+              type: object
+      security:
+      - XFirebaseBearer: []
+      summary: Get org info
+      tags:
+      - orgs
+  /admin/users:
+    get:
+      consumes:
+      - application/json
+      description: Get list user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domains.User'
+                  type: array
+              type: object
+      security:
+      - XFirebaseBearer: []
+      summary: Get list user info
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Craete a new user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.User'
+              type: object
+      summary: Craete a new user
+      tags:
+      - users
+  /admin/users/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wrapper.SuccessResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Get user info by ID
       parameters:
       - description: User ID
         in: path
@@ -82,7 +265,70 @@ paths:
                 data:
                   $ref: '#/definitions/domains.User'
               type: object
+      security:
+      - XFirebaseBearer: []
       summary: Get user info
       tags:
       - users
+    put:
+      consumes:
+      - application/json
+      description: Update user info
+      parameters:
+      - description: Request body update user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserReq'
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wrapper.SuccessResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Update user info
+      tags:
+      - users
+  /me:
+    get:
+      consumes:
+      - application/json
+      description: Get current user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.User'
+              type: object
+      security:
+      - XFirebaseBearer: []
+      summary: Get current user info
+      tags:
+      - users
+securityDefinitions:
+  XFirebaseBearer:
+    description: Enter the token with the `Bearer ` prefix, e.g. `Bearer jwt_token_string`.
+    in: header
+    name: Authorization
+    type: apiKey
+  XUserEmailAuth:
+    description: This method just enabled for local development
+    in: header
+    name: X-User-Email
+    type: apiKey
 swagger: "2.0"

@@ -12,10 +12,10 @@ import (
 
 // {{ .SingularName }}Usecase represent the {{ .SingularName | ToLowerCamel }}'s usecase contract
 type {{ .SingularName }}Usecase interface {
-	Create(ctx context.Context, request dto.Create{{ .SingularName }}Req) (*domains.{{ .SingularName }}, error)
+	Create(ctx context.Context, request *dto.Create{{ .SingularName }}Req) (*domains.{{ .SingularName }}, error)
 	GetByID(ctx context.Context, id int64) (*domains.{{ .SingularName }}, error)
-	Fetch(ctx context.Context, req dto.Search{{ .PluralName }}Req) ([]*domains.{{ .SingularName }}, int64, error)
-	Update(ctx context.Context, id int64, request dto.Update{{ .SingularName }}Req) error
+	Fetch(ctx context.Context, req *dto.Search{{ .PluralName }}Req) ([]*domains.{{ .SingularName }}, int64, error)
+	Update(ctx context.Context, id int64, request *dto.Update{{ .SingularName }}Req) error
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -30,7 +30,7 @@ func New{{ .SingularName }}Usecase({{ .SingularName | ToLowerCamel }}Repo reposi
 	}
 }
 
-func (u *{{ .SingularName | ToLowerCamel }}Usecase) Create(ctx context.Context, req dto.Create{{ .SingularName }}Req) ({{ .SingularName | ToLowerCamel }} *domains.{{ .SingularName }}, err error) {
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Create(ctx context.Context, req *dto.Create{{ .SingularName }}Req) ({{ .SingularName | ToLowerCamel }} *domains.{{ .SingularName }}, err error) {
 	{{ .SingularName | ToLowerCamel }} = &domains.{{ .SingularName }}{}
 	copier.Copy({{ .SingularName | ToLowerCamel }}, req)
 
@@ -52,7 +52,7 @@ func (u *{{ .SingularName | ToLowerCamel }}Usecase) GetByID(ctx context.Context,
 	return
 }
 
-func (u *{{ .SingularName | ToLowerCamel }}Usecase) Fetch(ctx context.Context, req dto.Search{{ .PluralName }}Req) ({{ .PluralName | ToLowerCamel }} []*domains.{{ .SingularName }}, count int64, err error) {
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Fetch(ctx context.Context, req *dto.Search{{ .PluralName }}Req) ({{ .PluralName | ToLowerCamel }} []*domains.{{ .SingularName }}, count int64, err error) {
 	p := repositories.ParamsForFetch{{ .PluralName }}{
 		CommonParamsForFetch: contexts.CommonParamsForFetch{
 			Page:  uint64(req.Page),
@@ -68,7 +68,7 @@ func (u *{{ .SingularName | ToLowerCamel }}Usecase) Fetch(ctx context.Context, r
 	return
 }
 
-func (u *{{ .SingularName | ToLowerCamel }}Usecase) Update(ctx context.Context, id int64, req dto.Update{{ .SingularName }}Req) (err error) {
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Update(ctx context.Context, id int64, req *dto.Update{{ .SingularName }}Req) (err error) {
 	{{ .SingularName | ToLowerCamel }}, err := u.{{ .SingularName | ToLowerCamel }}Repo.GetByID(ctx, id)
 	if err != nil {
 		return err

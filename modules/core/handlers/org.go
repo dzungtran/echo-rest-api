@@ -43,7 +43,15 @@ func NewOrgHandler(g *echo.Group, middManager *middlewares.MiddlewareManager, or
 	apiV1Resource.POST("/invites", wrapper.Wrap(handler.Invite)).Name = "invite:org"
 }
 
-// Create will store the Org by given request body
+// CreateNewOrg godoc
+// @Summary      Create a new org
+// @Description  Create a new org
+// @Tags         orgs
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  wrapper.SuccessResponse{data=domains.Org}
+// @Security     XFirebaseBearer
+// @Router       /admin/orgs [post]
 func (h *OrgHandler) Create(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	var req dto.CreateOrgReq
@@ -79,7 +87,16 @@ func (h *OrgHandler) Create(c echo.Context) wrapper.Response {
 	return wrapper.Response{Status: http.StatusCreated, Data: newOrg}
 }
 
-// GetByID will get Org by given id
+// GetOrgInfo godoc
+// @Summary      Get org info
+// @Description  Get org info by ID
+// @Tags         orgs
+// @Accept       json
+// @Produce      json
+// @Param        orgId   path      int  true  "Org ID"
+// @Success      200  {object}  wrapper.SuccessResponse{data=domains.Org}
+// @Security     XFirebaseBearer
+// @Router       /admin/orgs/{orgId} [get]
 func (h *OrgHandler) GetByID(c echo.Context) wrapper.Response {
 	org := contexts.GetOrgFromContext(c)
 	return wrapper.Response{
@@ -87,7 +104,17 @@ func (h *OrgHandler) GetByID(c echo.Context) wrapper.Response {
 	}
 }
 
-// Fetch will fetch the Org
+// GetListOrgsOfCurrentUser godoc
+// @Summary      Get list org
+// @Description  Get list org
+// @Tags         orgs
+// @Accept       json
+// @Produce      json
+// @Param        limit   query     int  false  "Number of records should be returned"
+// @Param        page    query     int  false  "Page"
+// @Success      200  {object}  wrapper.SuccessResponse{data=[]domains.Org}
+// @Security     XFirebaseBearer
+// @Router       /admin/orgs [get]
 func (h *OrgHandler) Fetch(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 

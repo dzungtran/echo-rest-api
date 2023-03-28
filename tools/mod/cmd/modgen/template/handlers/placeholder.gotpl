@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/domains"
 	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/dto"
 	"{{ .RootPackage }}/modules/{{ .PluralName | ToKebab }}/usecases"
 	"{{ .RootPackage }}/pkg/constants"
@@ -42,7 +43,7 @@ func (h *{{ .SingularName }}Handler) Create(c echo.Context) wrapper.Response {
 	var err error
 
 	payload := c.Get(constants.ContextKeyPayload)
-	req, ok := payload.(dto.Create{{ .SingularName }}Req)
+	req, ok := payload.(*dto.Create{{ .SingularName }}Req)
 	if !ok {
 		return wrapper.Response{
 			Status: http.StatusBadRequest,
@@ -82,7 +83,7 @@ func (h *{{ .SingularName }}Handler) GetByID(c echo.Context) wrapper.Response {
 func (h *{{ .SingularName }}Handler) Fetch(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	payload := c.Get(constants.ContextKeyPayload)
-	req, ok := payload.(dto.Search{{ .PluralName }}Req)
+	req, ok := payload.(*dto.Search{{ .PluralName }}Req)
 	if !ok {
 		return wrapper.Response{
 			Status: http.StatusBadRequest,

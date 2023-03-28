@@ -12,15 +12,15 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 <!--toc-->
 - [Echo REST API boilerplate](#echo-rest-api-boilerplate)
-    * [Overview](#overview)
-    * [Features](#features)
-    * [Running the project](#running-the-project)
-    * [Environment variables](#environment-variables)
-    * [Commands](#commands)
-    * [Folder structure](#folder-structure)
-    * [Open source refs](#open-source-refs)
-    * [Contributing](#contributing)
-    * [TODOs](#todos)
+  - [HOW TO USE THIS TEMPLATE](#how-to-use-this-template)
+  - [Features](#features)
+  - [Running the project](#running-the-project)
+  - [Environment variables](#environment-variables)
+  - [Commands](#commands)
+  - [Folder structure](#folder-structure)
+  - [Open source refs](#open-source-refs)
+  - [Contributing](#contributing)
+  - [TODOs](#todos)
 
 <!-- tocstop -->
 
@@ -37,13 +37,14 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 > **NOTE**: **WAIT** until first CI run on github actions before cloning your new project.
 
+<!--
 ## Overview
-
-![Request processing flow - Sequence Diagram](out/docs/diagrams/overview/request_flow.svg)
+ 
+![Request processing flow - Sequence Diagram](out/docs/diagrams/overview/request_flow.svg) -->
 
 ## Features
 
-- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password, 2FA) using [Ory/Kratos](https://github.com/ory/kratos).
+- [x] User Auth functionality (Signup, Login, Forgot Password, Reset Password, 2FA) using **Firebase Auth**
 - [x] REST API using [labstack/echo](https://github.com/labstack/echo).
 - [x] DB Migration using [golang-migrate/migrate](https://github.com/golang-migrate/migrate).
 - [x] Modular structure.
@@ -59,10 +60,8 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 - Make sure you have docker installed.
 - Copy `.env.example` to `.env.docker`
-- Add a new line `127.0.0.1	echo-rest.local` to `/etc/hosts` file.
 - Run `docker compose up -d`.
-- Go to `echo-rest.local:8088` to verify if the API server works.
-- Go to `echo-rest.local:4455` to verify if the Kratos works.
+- Go to `localhost:8088` to verify if the API server works.
 
 ## Environment variables
 
@@ -75,13 +74,15 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | Name                   | Type    | Description                                                      | Example value                                 |
 |------------------------|---------|------------------------------------------------------------------|-----------------------------------------------|
 | DATABASE_URL           | string  | Data source URL for main DB                                      | postgres://world:hello@postgres/echo_rest_api |
-| KRATOS_API_ENDPOINT    | string  | Public endpoint of Kratos                                        | http://kratos:4433/                           |
-| KRATOS_WEBHOOK_API_KEY | string  | Api key for Kratos integration                                   | very-very-very-secure-api-key                 |
 | PORT                   | integer | Http port (accepts also port number only for heroku compability) | 8088                                          |
 | AUTO_MIGRATE           | boolean | Enable run migration every time the application starts           | true                                          |
 | ENV                    | string  | Environment name                                                 | development                                   |
 | REDIS_URL              | string  | Optional                                                         | redis://redis:6379                            |
-
+| AUTH_PROVIDER              | string  | Optional                                                         | firebase_auth                            |
+| FIREBASE_CREDENTIALS              | json  | firebase json admin key                                                         | {firebase_admin_key}                            |
+| FIREBASE_AUTH_CREDENTIALS              | json  | filebase json auth key                                                         | {firebase_auth_key}                            |
+| KRATOS_API_ENDPOINT    | string  | [DEPRECATED] Public endpoint of Kratos                                        | http://kratos:4433/                           |
+| KRATOS_WEBHOOK_API_KEY | string  | [DEPRECATED] Api key for Kratos integration                                   | very-very-very-secure-api-key                 |
 </details>
 
 ## Commands
@@ -92,7 +93,7 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | `make build-api`                         | Build application binary                                    |
 | `make setup`                             | Run commands to setup development env                       |
 | `make run-db`                            | Run DB docker container on local                            |
-| `go run ./tools/mod/ gen`                | Generate module component codes.                            |
+| `go run ./tools/mod/ gen`                | Generate module component codes. e.g: `go run ./tools/mod/ gen -n Booking`                           |
 | `make migration-create [migration_name]` | Create migration files. migration_name should be snake case |
 | `make git-hooks`                         | Setup git hooks                                             |
 | `make routes`                            | Generate routes file for authorization                      |
@@ -132,7 +133,6 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 ```
 
 ## Open source refs
-- https://www.ory.sh/docs/kratos/self-service
 - https://cuelang.org/docs/about/
 - https://www.openpolicyagent.org/docs/latest/
 - https://echo.labstack.com/guide/

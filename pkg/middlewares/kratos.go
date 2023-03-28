@@ -28,7 +28,7 @@ func (m *MiddlewareManager) KratosAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		var err error
 
 		ctx := c.Request().Context()
-		ss, _, err = m.kratosClient.V0alpha2Api.ToSession(ctx).
+		ss, _, err = m.kratosClient.FrontendApi.ToSession(ctx).
 			Cookie(c.Request().Header.Get("Cookie")).
 			XSessionToken(c.Request().Header.Get("X-Session-Token")).
 			Execute()

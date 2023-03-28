@@ -10,6 +10,7 @@ import (
 	"github.com/dzungtran/echo-rest-api/modules/core/usecases"
 	"github.com/dzungtran/echo-rest-api/pkg/authz"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
+	"github.com/dzungtran/echo-rest-api/pkg/contexts"
 	"github.com/dzungtran/echo-rest-api/pkg/middlewares"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/dzungtran/echo-rest-api/pkg/wrapper"
@@ -30,13 +31,23 @@ func NewUserHandler(g *echo.Group, middManager *middlewares.MiddlewareManager, u
 	apiV1.GET("", wrapper.Wrap(handler.Fetch)).Name = "list:user"
 	apiV1.POST("", wrapper.Wrap(handler.Create)).Name = "create:user"
 
+	apiMeV1 := g.Group("me", middManager.Auth())
+	apiMeV1.GET("", wrapper.Wrap(handler.GetCurrentUserInfo)).Name = "read:me"
+
 	apiV1Resource := g.Group("admin/users/:userId", middManager.Auth())
 	apiV1Resource.GET("", wrapper.Wrap(handler.GetByID)).Name = "read:user"
 	apiV1Resource.PUT("", wrapper.Wrap(handler.Update), middManager.CheckPolicies()).Name = "update:user"
 	apiV1Resource.DELETE("", wrapper.Wrap(handler.Delete), middManager.CheckPolicies()).Name = "delete:user"
 }
 
-// Create will store the user by given request body
+// CreateANewUser godoc
+// @Summary      Craete a new user
+// @Description  Craete a new user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  wrapper.SuccessResponse{data=domains.User}
+// @Router       /admin/users [post]
 func (h *UserHandler) Create(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	var req dto.CreateUserReq
@@ -62,13 +73,14 @@ func (h *UserHandler) Create(c echo.Context) wrapper.Response {
 
 // GetUserInfo godoc
 // @Summary      Get user info
-// @Description  Get user info ID
+// @Description  Get user info by ID
 // @Tags         users
 // @Accept       json
 // @Produce      json
 // @Param        userId   path      int  true  "User ID"
 // @Success      200  {object}  wrapper.SuccessResponse{data=domains.User}
-// @Router       /users/{userId} [get]
+// @Security     XFirebaseBearer
+// @Router       /admin/users/{userId} [get]
 func (h *UserHandler) GetByID(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	id, err := strconv.Atoi(c.Param("userId"))
@@ -112,7 +124,31 @@ func (h *UserHandler) GetByID(c echo.Context) wrapper.Response {
 	}
 }
 
-// Fetch will fetch the user
+// GetCurrentUserInfo godoc
+// @Summary      Get current user info
+// @Description  Get current user info
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  wrapper.SuccessResponse{data=domains.User}
+// @Security     XFirebaseBearer
+// @Router       /me [get]
+func (h *UserHandler) GetCurrentUserInfo(c echo.Context) wrapper.Response {
+	user, _ := contexts.GetUserFromContext(c)
+	return wrapper.Response{
+		Data: user,
+	}
+}
+
+// GetListUser godoc
+// @Summary      Get list user info
+// @Description  Get list user info
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  wrapper.SuccessResponse{data=[]domains.User}
+// @Security     XFirebaseBearer
+// @Router       /admin/users [get]
 func (h *UserHandler) Fetch(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 
@@ -139,7 +175,17 @@ func (h *UserHandler) Fetch(c echo.Context) wrapper.Response {
 	}
 }
 
-// Update will get user by given request body
+// UpdateUserInfo godoc
+// @Summary      Update user info
+// @Description  Update user info
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        body     body      dto.UpdateUserReq  true  "Request body update user"
+// @Param        userId   path      int  true  "User ID"
+// @Success      200  {object}  wrapper.SuccessResponse{}
+// @Security     XFirebaseBearer
+// @Router       /admin/users/{userId} [put]
 func (h *UserHandler) Update(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	id, err := strconv.Atoi(c.Param("userId"))
@@ -188,7 +234,15 @@ func (h *UserHandler) Update(c echo.Context) wrapper.Response {
 	return wrapper.Response{}
 }
 
-// Delete will delete user by given param
+// DeleteUser godoc
+// @Summary      Delete user
+// @Description  Delete user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  wrapper.SuccessResponse{}
+// @Security     XFirebaseBearer
+// @Router       /admin/users/{userId} [delete]
 func (h *UserHandler) Delete(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	id, err := strconv.Atoi(c.Param("userId"))

@@ -4,35 +4,28 @@
   },
   "roles_chart": {
     "owner": {
-      "access": [
-        "delete:org",
-        "update:org"
-      ]
+      "access": ["delete:org", "update:org"]
     },
     "manager": {
-      "access": [
-        "invite:org"
-      ],
+      "access": ["invite:org"],
       "owner": "owner"
     },
     "editor": {
-      "access": [
-        "create:project",
-        "update:project",
-        "delete:project"
-      ],
+      "access": ["create:project", "update:project", "delete:project"],
       "owner": "manager"
     },
     "viewer": {
       "access": [
         "read:user",
         "update:user",
-        
+
         "read:org",
         "list:org",
 
         "list:project",
-        "read:project"
+        "read:project",
+
+        "read:me"
       ],
       "owner": "manager"
     },

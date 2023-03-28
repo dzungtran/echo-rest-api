@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/dzungtran/echo-rest-api/modules/core/dto"
@@ -33,7 +33,7 @@ func NewKratosHookHandler(g *echo.Group, middManager *middlewares.MiddlewareMana
 // Create will store the user by given request body
 func (h *KratosHookHandler) AfterRegistration(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
-	resp, _ := ioutil.ReadAll(c.Request().Body)
+	resp, _ := io.ReadAll(c.Request().Body)
 	var err error
 	req := dto.CreateUserReq{
 		Email:     gjson.GetBytes(resp, "traits.email").String(),
@@ -89,7 +89,7 @@ func (h *KratosHookHandler) AfterRegistration(c echo.Context) wrapper.Response {
 
 func (h *KratosHookHandler) AfterSettings(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
-	resp, _ := ioutil.ReadAll(c.Request().Body)
+	resp, _ := io.ReadAll(c.Request().Body)
 	var err error
 	userId := int64(0)
 

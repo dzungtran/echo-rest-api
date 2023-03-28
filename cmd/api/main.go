@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"html/template"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,6 +20,14 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+type TemplateRenderer struct {
+	templates *template.Template
+}
+
+func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
+
 // @title Echo REST API
 // @version 1.0
 // @description This documentation for Echo REST server.
@@ -30,8 +40,17 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host docs.api.com
 // @BasePath /
+
+// @securityDefinitions.apikey  XUserEmailAuth
+// @in                          header
+// @name                        X-User-Email
+// @description					This method just enabled for local development
+
+// @securityDefinitions.apikey  XFirebaseBearer
+// @in                          header
+// @name                        Authorization
+// @description					Enter the token with the `Bearer ` prefix, e.g. `Bearer jwt_token_string`.
 func main() {
 	// init app config
 	conf, _ := config.InitAppConfig()
@@ -44,12 +63,16 @@ func main() {
 	// Echo instance
 	e := echo.New()
 
+	t := &TemplateRenderer{
+		templates: template.Must(template.ParseFS(di.GetCoreTemplates(), "*.go.tpl")),
+	}
+	e.Renderer = t
+
 	// Bind default middleware
 	e.Use(middleware.LoggerWithConfig(config.GetEchoLogConfig(conf)))
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.HideBanner = true
-	// e.HidePort = true
 	e.Validator = conf.Validator
 
 	// Setup infra
@@ -85,7 +108,7 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	e.GET("/docs/*", echoSwagger.WrapHandler)
 
 	// Start server
 	go func() {
