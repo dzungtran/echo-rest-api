@@ -141,6 +141,7 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 - https://cuelang.org/docs/about/
 - https://www.openpolicyagent.org/docs/latest/
 - https://echo.labstack.com/guide/
+- https://firebase.google.com/docs/auth/admin/
 - https://pkg.go.dev/firebase.google.com/go/auth
 
 
