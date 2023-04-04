@@ -63,6 +63,11 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 - Run `docker compose up -d`.
 - Go to `localhost:8088` to verify if the API server works.
 
+## Swagger Docs
+
+To create swagger api documentation you just have to run `make docs`.    
+after the command executed successfully, run the app and open `http://localhost:8088/docs/index.html` to see swagger documentation page.
+
 ## Environment variables
 
 By default, when you run application with `make run-api` command, it will look at `$HOME/.env` for exporting environment variabels.
@@ -99,7 +104,7 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | `make routes`                            | Generate routes file for authorization                      |
 | `make docs`                              | Generate API docs                                           |
 
-## Folder structure
+## Folder Structure
 
 ```
 .
@@ -132,15 +137,12 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 
 ```
 
-## Swagger docs
-
-To create swagger document you just have to run `make docs`.    
-after above command execute successfully, run the app and open `http://localhost:8088/docs/index.html` to see swagger documentation page.
-
-## Open source refs
+## Open Source Refs
 - https://cuelang.org/docs/about/
 - https://www.openpolicyagent.org/docs/latest/
 - https://echo.labstack.com/guide/
+- https://firebase.google.com/docs/auth/admin/
+- https://pkg.go.dev/firebase.google.com/go/auth
 
 
 ## Contributing
