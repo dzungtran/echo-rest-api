@@ -132,6 +132,11 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 
 ```
 
+## swagger docs
+
+to create swagger document you just have to run `make docs`.    
+after above command execute successfully, run the app and open `http://localhost:8088/docs/index.html` to see swagger documentation page.
+
 ## Open source refs
 - https://cuelang.org/docs/about/
 - https://www.openpolicyagent.org/docs/latest/
