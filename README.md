@@ -132,9 +132,9 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 
 ```
 
-## swagger docs
+## Swagger docs
 
-to create swagger document you just have to run `make docs`.    
+To create swagger document you just have to run `make docs`.    
 after above command execute successfully, run the app and open `http://localhost:8088/docs/index.html` to see swagger documentation page.
 
 ## Open source refs
@@ -155,4 +155,3 @@ Create a PR with relevant information if you want to contribute in this template
 - [x] Update README.md.
 - [x] Update API docs.
 - [ ] Write more tests.
-- [ ] Add support Heroku.
