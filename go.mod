@@ -23,8 +23,8 @@ require (
 	github.com/ory/kratos-client-go v0.11.1
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
-	github.com/swaggo/echo-swagger v1.3.5
-	github.com/swaggo/swag v1.8.5
+	github.com/swaggo/echo-swagger v1.4.0
+	github.com/swaggo/swag v1.8.12
 	github.com/tidwall/gjson v1.14.3
 	github.com/tidwall/sjson v1.2.5
 	go.uber.org/dig v1.15.0
@@ -89,7 +89,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a // indirect
+	github.com/swaggo/files/v2 v2.0.0 // indirect
 	github.com/tchap/go-patricia/v2 v2.3.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
@@ -102,12 +102,12 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.4.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
+	golang.org/x/tools v0.7.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
