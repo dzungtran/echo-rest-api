@@ -6,7 +6,7 @@ require (
 	cuelang.org/go v0.4.3
 	firebase.google.com/go/v4 v4.10.0
 	github.com/DATA-DOG/go-sqlmock v1.5.0
-	github.com/Masterminds/squirrel v1.5.3
+	github.com/Masterminds/squirrel v1.5.4
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis/v8 v8.11.5
