@@ -113,7 +113,7 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 │   └── api             # Main package of API service
 ├── config              # Application configs struct
 │   ...        
-├── docs                # Content documentation and PlantUML for charts and diagrams
+├── docs                # Contains documentation and PlantUML for charts and diagrams
 ├── domains
 ├── infrastructure
 ├── migrations
