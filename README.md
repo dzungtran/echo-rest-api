@@ -124,11 +124,11 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 │   └── shared          # To store common usecases and domains which shared between modules
 ├── out                 # Output folder of PlantUML
 ├── pkg
-│   ├── authz           # Contents Rego rule files for RBAC
+│   ├── authz           # Contains Rego rule files for RBAC
 │   ├── constants
-│   ├── cue             # Contents cue files for data validation
+│   ├── cue             # Contains cue files for data validation
 │   ...
-│   └── utils           # Contents helper functions
+│   └── utils           # Contains helper functions
 ├── tests
 └── tools
    ├── modtool         # Module generation
