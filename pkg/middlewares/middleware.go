@@ -13,10 +13,8 @@ import (
 	"github.com/dzungtran/echo-rest-api/pkg/authz"
 	"github.com/dzungtran/echo-rest-api/pkg/constants"
 	"github.com/dzungtran/echo-rest-api/pkg/contexts"
-	"github.com/dzungtran/echo-rest-api/pkg/kratos"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/labstack/echo/v4"
-	ory "github.com/ory/kratos-client-go"
 )
 
 // MiddlewareManager ...
@@ -29,8 +27,7 @@ type MiddlewareManager struct {
 	orgRepo     coreRepo.OrgRepository
 	projectRepo projectRepo.ProjectRepository
 
-	userUC       usecases.UserUsecase
-	kratosClient *ory.APIClient
+	userUC usecases.UserUsecase
 }
 
 // NewMiddlewareManager will create new an MiddlewareManager object
@@ -45,12 +42,11 @@ func NewMiddlewareManager(
 	userUC usecases.UserUsecase,
 ) *MiddlewareManager {
 	return &MiddlewareManager{
-		appConf:      appConf,
-		userRepo:     userRepo,
-		userOrgRepo:  userOrgRepo,
-		orgRepo:      orgRepo,
-		userUC:       userUC,
-		kratosClient: kratos.NewKratosSelfHostedClient(appConf.KratosApiEndpoint, appConf.Environment == "development"),
+		appConf:     appConf,
+		userRepo:    userRepo,
+		userOrgRepo: userOrgRepo,
+		orgRepo:     orgRepo,
+		userUC:      userUC,
 	}
 }
 
@@ -58,8 +54,6 @@ func (m MiddlewareManager) Auth() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		switch m.appConf.AuthProvider {
-		case "kratos":
-			return m.KratosAuth(next)
 		default:
 			// Default auth method
 			return m.FireBaseAuth(next)

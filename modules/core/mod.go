@@ -36,7 +36,6 @@ func (coreModule) RegisterHandlers(g *echo.Group, container *dig.Container) erro
 	) {
 		handlers.NewOrgHandler(g, middManager, orgUsecase)
 		handlers.NewUserHandler(g, middManager, userUsecase)
-		handlers.NewKratosHookHandler(g, middManager, userUsecase)
 		handlers.NewAuthHandler(g, middManager, userUsecase, appConf)
 	})
 }
