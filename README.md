@@ -13,12 +13,14 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 <!--toc-->
 - [Echo REST API boilerplate](#echo-rest-api-boilerplate)
   - [HOW TO USE THIS TEMPLATE](#how-to-use-this-template)
+  - [Overview](#overview)
   - [Features](#features)
   - [Running the project](#running-the-project)
+  - [Swagger Docs](#swagger-docs)
   - [Environment variables](#environment-variables)
   - [Commands](#commands)
-  - [Folder structure](#folder-structure)
-  - [Open source refs](#open-source-refs)
+  - [Folder Structure](#folder-structure)
+  - [Open Source Refs](#open-source-refs)
   - [Contributing](#contributing)
   - [TODOs](#todos)
 
@@ -39,8 +41,6 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 <!--
 ## Overview
- 
-![Request processing flow - Sequence Diagram](out/docs/diagrams/overview/request_flow.svg) -->
 
 ## Features
 
@@ -86,8 +86,6 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | AUTH_PROVIDER              | string  | Optional                                                         | firebase_auth                            |
 | FIREBASE_CREDENTIALS              | json  | firebase json admin key                                                         | {firebase_admin_key}                            |
 | FIREBASE_AUTH_CREDENTIALS              | json  | filebase json auth key                                                         | {firebase_auth_key}                            |
-| KRATOS_API_ENDPOINT    | string  | [DEPRECATED] Public endpoint of Kratos                                        | http://kratos:4433/                           |
-| KRATOS_WEBHOOK_API_KEY | string  | [DEPRECATED] Api key for Kratos integration                                   | very-very-very-secure-api-key                 |
 </details>
 
 ## Commands
