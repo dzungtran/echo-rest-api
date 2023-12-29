@@ -86,9 +86,9 @@ func IsCueError(err error) bool {
 }
 
 func IsDuplicatedError(err error) bool {
-	switch err.(type) {
+	switch e := err.(type) {
 	case *pq.Error:
-		return err.(pq.Error).Code == "23505"
+		return e.Code == "23505"
 	}
 
 	return false

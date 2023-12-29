@@ -27,8 +27,9 @@ func NewProjectHandler(g *echo.Group, middManager *middlewares.MiddlewareManager
 	}
 
 	apiV1 := g.Group("admin/projects", middManager.Auth())
-	apiV1.GET("", wrapper.Wrap(handler.Fetch), middManager.CheckPoliciesWithRequestPayload(&dto.SearchProjectsReq{})).Name = "list:project"
-	apiV1.POST("", wrapper.Wrap(handler.Create), middManager.CheckPoliciesWithRequestPayload(&dto.CreateProjectReq{})).Name = "create:project"
+	// Check comment of function CheckPoliciesWithRequestPayload
+	apiV1.GET("", wrapper.Wrap(handler.Fetch), middManager.CheckPoliciesWithRequestPayload(new(dto.SearchProjectsReq))).Name = "list:project"
+	apiV1.POST("", wrapper.Wrap(handler.Create), middManager.CheckPoliciesWithRequestPayload(new(dto.CreateProjectReq))).Name = "create:project"
 
 	apiV1Resource := g.Group("admin/projects/:projectId",
 		middManager.Auth(),

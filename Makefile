@@ -13,7 +13,7 @@ migration-down:
 	migrate -path migrations/sql -verbose -database "${DATABASE_URL}" down
 
 run-db:
-	docker compose up postgres redis
+	docker compose up postgres
 
 run-api:
 	go run ./cmd/api/

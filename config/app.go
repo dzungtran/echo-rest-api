@@ -19,7 +19,7 @@ type AppConfig struct {
 	AppPort     string `json:"app_port"`
 	BaseURL     string `json:"base_url"`
 	DatabaseURL string `json:"database_url"`
-	RedisURL    string `json:"redis_url"`
+	// RedisURL    string `json:"redis_url"`
 
 	Validator   echo.Validator        `json:"-"`
 	CORSConfig  middleware.CORSConfig `json:"-"`
@@ -83,9 +83,9 @@ func InitAppConfig() (*AppConfig, error) {
 		AppPort:     appPort,
 		BaseURL:     os.Getenv("BASE_URL"),
 		DatabaseURL: os.Getenv("DATABASE_URL"),
-		RedisURL:    os.Getenv("REDIS_URL"),
-		Validator:   &AppValidator{validator: validator.New()},
-		CORSConfig:  middleware.DefaultCORSConfig,
+		// RedisURL:    os.Getenv("REDIS_URL"),
+		Validator:  &AppValidator{validator: validator.New()},
+		CORSConfig: middleware.DefaultCORSConfig,
 
 		// 3rd-parties settings
 		AutoMigrate: os.Getenv("AUTO_MIGRATE") == "true",

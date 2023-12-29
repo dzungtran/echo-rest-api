@@ -23,7 +23,6 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
   - [Open Source Refs](#open-source-refs)
   - [Contributing](#contributing)
   - [TODOs](#todos)
-
 <!-- tocstop -->
 
 ## HOW TO USE THIS TEMPLATE
@@ -39,7 +38,6 @@ Any feedback and pull requests are welcome and highly appreciated. Feel free to 
 
 > **NOTE**: **WAIT** until first CI run on github actions before cloning your new project.
 
-<!--
 ## Overview
 
 ## Features
@@ -82,7 +80,6 @@ Setting your config as Environment Variables is recommended as by 12-Factor App.
 | PORT                   | integer | Http port (accepts also port number only for heroku compability) | 8088                                          |
 | AUTO_MIGRATE           | boolean | Enable run migration every time the application starts           | true                                          |
 | ENV                    | string  | Environment name                                                 | development                                   |
-| REDIS_URL              | string  | Optional                                                         | redis://redis:6379                            |
 | AUTH_PROVIDER              | string  | Optional                                                         | firebase_auth                            |
 | FIREBASE_CREDENTIALS              | json  | firebase json admin key                                                         | {firebase_admin_key}                            |
 | FIREBASE_AUTH_CREDENTIALS              | json  | filebase json auth key                                                         | {firebase_auth_key}                            |
@@ -155,3 +152,4 @@ Create a PR with relevant information if you want to contribute in this template
 - [x] Update README.md.
 - [x] Update API docs.
 - [ ] Write more tests.
+- [ ] Replace all cuelang validation by go-playground/validator

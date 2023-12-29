@@ -14,7 +14,7 @@ services:
       - backend
     depends_on:
       - postgres
-      - redis
+      # - redis
     ports:
       - "8088:8088"
 
@@ -30,12 +30,12 @@ services:
     ports:
       - "5432:5432"
 
-  redis:
-    image: redis:latest
-    networks:
-      - backend
-    ports:
-      - "6379:6379"
+  # redis:
+  #   image: redis:latest
+  #   networks:
+  #     - backend
+  #   ports:
+  #     - "6379:6379"
 
 networks:
   backend:
