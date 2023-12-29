@@ -170,6 +170,7 @@ func (m MiddlewareManager) CheckPoliciesWithProject() echo.MiddlewareFunc {
 	}
 }
 
+// NOTES: everywhen we call this function, we should pass a new instance of payloadInst to avoid race condition
 func (m MiddlewareManager) CheckPoliciesWithRequestPayload(payloadInst interface{}) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
