@@ -136,7 +136,7 @@ var modgenCmd = &cobra.Command{
 		}
 
 		for fn, c := range parsedFiles {
-			fn = strings.ReplaceAll(fn, ".gotpl", ".go")
+			fn = strings.ReplaceAll(fn, ".go.tpl", ".go")
 			fn = strings.ReplaceAll(fn, "placeholder", utils.ToSnake(tVars.SingularName))
 			err = ioutil.WriteFile(fn, []byte(c), 0644)
 			if err != nil {
