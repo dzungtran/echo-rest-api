@@ -151,5 +151,10 @@ Create a PR with relevant information if you want to contribute in this template
 - [x] Update docker compose for ory/kratos.
 - [x] Update README.md.
 - [x] Update API docs.
-- [ ] Write more tests.
 - [ ] Replace all cuelang validation by go-playground/validator
+- [ ] Remove super admin role and make OPA rules more simpler
+- [ ] Write OPA rules to support RBAC for neseted resources
+- [ ] Write docs for OPA rules
+- [ ] Support simple auth by API Key
+- [ ] Add a migration for initial user (require auth with api key)
+- [ ] Write acceptence tests (pytest)
