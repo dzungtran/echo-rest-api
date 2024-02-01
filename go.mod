@@ -5,7 +5,7 @@ go 1.21
 require (
 	cuelang.org/go v0.7.0
 	firebase.google.com/go/v4 v4.13.0
-	github.com/DATA-DOG/go-sqlmock v1.5.1
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/go-playground/validator/v10 v10.16.0
