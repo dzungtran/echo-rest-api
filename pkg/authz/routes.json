@@ -21,15 +21,13 @@
     "PUT": "update:project"
   },
   "/admin/users": {
-    "GET": "list:user",
-    "POST": "create:user"
+    "GET": "list:user"
   },
   "/admin/users/:userId": {
-    "DELETE": "delete:user",
-    "GET": "read:user",
-    "PUT": "update:user"
+    "GET": "read:user"
   },
   "/me": {
-    "GET": "read:me"
+    "GET": "read:me",
+    "PUT": "update:me"
   }
 }

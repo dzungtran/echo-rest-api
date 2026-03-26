@@ -45,11 +45,14 @@ func NewOrgHandler(g *echo.Group, middManager *middlewares.MiddlewareManager, or
 
 // CreateNewOrg godoc
 // @Summary      Create a new org
-// @Description  Create a new org
+// @Description  Create a new organization
 // @Tags         orgs
 // @Accept       json
 // @Produce      json
-// @Success      200  {object}  wrapper.SuccessResponse{data=domains.Org}
+// @Param        body  body      dto.CreateOrgReq  true  "Organization creation request"
+// @Success      201  {object}  wrapper.SuccessResponse{data=domains.Org}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      500  {object}  wrapper.FailResponse
 // @Security     XFirebaseBearer
 // @Router       /admin/orgs [post]
 func (h *OrgHandler) Create(c echo.Context) wrapper.Response {
@@ -95,6 +98,9 @@ func (h *OrgHandler) Create(c echo.Context) wrapper.Response {
 // @Produce      json
 // @Param        orgId   path      int  true  "Org ID"
 // @Success      200  {object}  wrapper.SuccessResponse{data=domains.Org}
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      404  {object}  wrapper.FailResponse
 // @Security     XFirebaseBearer
 // @Router       /admin/orgs/{orgId} [get]
 func (h *OrgHandler) GetByID(c echo.Context) wrapper.Response {
@@ -106,13 +112,16 @@ func (h *OrgHandler) GetByID(c echo.Context) wrapper.Response {
 
 // GetListOrgsOfCurrentUser godoc
 // @Summary      Get list org
-// @Description  Get list org
+// @Description  Get list of organizations for current user
 // @Tags         orgs
 // @Accept       json
 // @Produce      json
 // @Param        limit   query     int  false  "Number of records should be returned"
 // @Param        page    query     int  false  "Page"
 // @Success      200  {object}  wrapper.SuccessResponse{data=[]domains.Org}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
 // @Security     XFirebaseBearer
 // @Router       /admin/orgs [get]
 func (h *OrgHandler) Fetch(c echo.Context) wrapper.Response {
@@ -160,7 +169,22 @@ func (h *OrgHandler) Fetch(c echo.Context) wrapper.Response {
 	}
 }
 
-// Update will get org by given request body
+// UpdateOrgInfo godoc
+// @Summary      Update org info
+// @Description  Update organization by ID
+// @Tags         orgs
+// @Accept       json
+// @Produce      json
+// @Param        orgId   path      int  true  "Org ID"
+// @Param        body    body      dto.UpdateOrgReq  true  "Organization update request"
+// @Success      200  {object}  wrapper.SuccessResponse{}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      404  {object}  wrapper.FailResponse
+// @Failure      500  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/orgs/{orgId} [put]
 func (h *OrgHandler) Update(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	var err error
@@ -197,7 +221,21 @@ func (h *OrgHandler) Update(c echo.Context) wrapper.Response {
 	return wrapper.Response{}
 }
 
-// Delete will delete org by given param
+// DeleteOrg godoc
+// @Summary      Delete org
+// @Description  Delete organization by ID
+// @Tags         orgs
+// @Accept       json
+// @Produce      json
+// @Param        orgId   path      int  true  "Org ID"
+// @Success      200  {object}  wrapper.SuccessResponse{}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      404  {object}  wrapper.FailResponse
+// @Failure      500  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/orgs/{orgId} [delete]
 func (h *OrgHandler) Delete(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	id, err := strconv.Atoi(c.Param("orgId"))
@@ -224,6 +262,22 @@ func (h *OrgHandler) Delete(c echo.Context) wrapper.Response {
 	return wrapper.Response{}
 }
 
+// InviteUsers godoc
+// @Summary      Invite users to org
+// @Description  Send invitation emails to users to join organization
+// @Tags         orgs
+// @Accept       json
+// @Produce      json
+// @Param        orgId   path      int  true  "Org ID"
+// @Param        body    body      dto.InviteUsers  true  "Invitation request"
+// @Success      200  {object}  wrapper.SuccessResponse{}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      404  {object}  wrapper.FailResponse
+// @Failure      500  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/orgs/{orgId}/invites [post]
 func (h *OrgHandler) Invite(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	var err error

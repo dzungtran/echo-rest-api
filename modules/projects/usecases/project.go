@@ -5,9 +5,9 @@ import (
 
 	"github.com/dzungtran/echo-rest-api/modules/projects/domains"
 	"github.com/dzungtran/echo-rest-api/modules/projects/dto"
-	"github.com/dzungtran/echo-rest-api/modules/projects/pkg/cue"
 	"github.com/dzungtran/echo-rest-api/modules/projects/repositories"
 	"github.com/dzungtran/echo-rest-api/pkg/contexts"
+	"github.com/dzungtran/echo-rest-api/pkg/cue"
 	"github.com/dzungtran/echo-rest-api/pkg/utils"
 	"github.com/jinzhu/copier"
 )

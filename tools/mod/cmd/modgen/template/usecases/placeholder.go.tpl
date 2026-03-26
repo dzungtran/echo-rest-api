@@ -30,7 +30,7 @@ func New{{ .SingularName }}Usecase({{ .SingularName | ToLowerCamel }}Repo reposi
 	}
 }
 
-func (u *{{ .SingularName | ToLowerCamel }}Usecase) Create(ctx context.Context, req *dto.Create{{ .SingularName }}Req) ({{ .SingularName | ToLowerCamel }} *domains.{{ .SingularName }}, err error) {
+func (u *{{ .SingularName | ToLowerCamel }}Usecase) Create(ctx context.Context, req dto.Create{{ .SingularName }}Req) ({{ .SingularName | ToLowerCamel }} *domains.{{ .SingularName }}, err error) {
 	{{ .SingularName | ToLowerCamel }} = &domains.{{ .SingularName }}{}
 	copier.Copy({{ .SingularName | ToLowerCamel }}, req)
 

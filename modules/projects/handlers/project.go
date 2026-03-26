@@ -41,7 +41,20 @@ func NewProjectHandler(g *echo.Group, middManager *middlewares.MiddlewareManager
 	apiV1Resource.DELETE("", wrapper.Wrap(handler.Delete)).Name = "delete:project"
 }
 
-// Create will store the Project by given request body
+// CreateProject godoc
+// @Summary      Create a new project
+// @Description  Create a new project under an organization
+// @Tags         projects
+// @Accept       json
+// @Produce      json
+// @Param        body    body      dto.CreateProjectReq  true  "Project creation request"
+// @Success      201  {object}  wrapper.SuccessResponse{data=domains.Project}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      500  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/projects [post]
 func (h *ProjectHandler) Create(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	var err error
@@ -67,7 +80,19 @@ func (h *ProjectHandler) Create(c echo.Context) wrapper.Response {
 	return wrapper.Response{Status: http.StatusCreated, Data: proj}
 }
 
-// GetByID will get Project by given id
+// GetProjectInfo godoc
+// @Summary      Get project info
+// @Description  Get project by ID
+// @Tags         projects
+// @Accept       json
+// @Produce      json
+// @Param        projectId   path      int  true  "Project ID"
+// @Success      200  {object}  wrapper.SuccessResponse{data=domains.Project}
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      404  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/projects/{projectId} [get]
 func (h *ProjectHandler) GetByID(c echo.Context) wrapper.Response {
 	project := contexts.GetProjectFromContext(c)
 	return wrapper.Response{
@@ -75,7 +100,20 @@ func (h *ProjectHandler) GetByID(c echo.Context) wrapper.Response {
 	}
 }
 
-// Fetch will fetch the Project
+// ListProjects godoc
+// @Summary      List projects
+// @Description  Get list of projects
+// @Tags         projects
+// @Accept       json
+// @Produce      json
+// @Param        limit   query     int  false  "Number of records should be returned"
+// @Param        page    query     int  false  "Page"
+// @Success      200  {object}  wrapper.SuccessResponse{data=[]domains.Project}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/projects [get]
 func (h *ProjectHandler) Fetch(c echo.Context) wrapper.Response {
 	ctx := c.Request().Context()
 	payload := c.Get(constants.ContextKeyPayload)
@@ -102,7 +140,22 @@ func (h *ProjectHandler) Fetch(c echo.Context) wrapper.Response {
 	}
 }
 
-// Update will get project by given request body
+// UpdateProject godoc
+// @Summary      Update project
+// @Description  Update project by ID
+// @Tags         projects
+// @Accept       json
+// @Produce      json
+// @Param        projectId   path      int  true  "Project ID"
+// @Param        body    body      dto.UpdateProjectReq  true  "Project update request"
+// @Success      200  {object}  wrapper.SuccessResponse{}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      404  {object}  wrapper.FailResponse
+// @Failure      500  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/projects/{projectId} [put]
 func (h *ProjectHandler) Update(c echo.Context) wrapper.Response {
 	var err error
 	ctx := c.Request().Context()
@@ -133,7 +186,21 @@ func (h *ProjectHandler) Update(c echo.Context) wrapper.Response {
 	return wrapper.Response{}
 }
 
-// Delete will delete project by given param
+// DeleteProject godoc
+// @Summary      Delete project
+// @Description  Delete project by ID
+// @Tags         projects
+// @Accept       json
+// @Produce      json
+// @Param        projectId   path      int  true  "Project ID"
+// @Success      200  {object}  wrapper.SuccessResponse{}
+// @Failure      400  {object}  wrapper.FailResponse
+// @Failure      401  {object}  wrapper.FailResponse
+// @Failure      403  {object}  wrapper.FailResponse
+// @Failure      404  {object}  wrapper.FailResponse
+// @Failure      500  {object}  wrapper.FailResponse
+// @Security     XFirebaseBearer
+// @Router       /admin/projects/{projectId} [delete]
 func (h *ProjectHandler) Delete(c echo.Context) wrapper.Response {
 	var err error
 	ctx := c.Request().Context()

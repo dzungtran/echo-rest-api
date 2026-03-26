@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -69,7 +68,7 @@ var modgenCmd = &cobra.Command{
 		folderStruct := make(map[string]bool)
 
 		pluralize := pluralize.NewClient()
-		yamlFile, err := ioutil.ReadFile(configFile)
+		yamlFile, err := os.ReadFile(configFile)
 		if err != nil {
 			return err
 		}
@@ -138,7 +137,7 @@ var modgenCmd = &cobra.Command{
 		for fn, c := range parsedFiles {
 			fn = strings.ReplaceAll(fn, ".go.tpl", ".go")
 			fn = strings.ReplaceAll(fn, "placeholder", utils.ToSnake(tVars.SingularName))
-			err = ioutil.WriteFile(fn, []byte(c), 0644)
+			err = os.WriteFile(fn, []byte(c), 0644)
 			if err != nil {
 				fmt.Println("failed writing to file: ", fn, "\n", err.Error())
 			}
@@ -166,6 +165,6 @@ func runGenerateRoutes() {
 func init() {
 	rootCmd.AddCommand(modgenCmd)
 	modgenCmd.Flags().StringVarP(&mgOpts.Name, "name", "n", "", "module name to generate")
-	modgenCmd.Flags().StringVarP(&mgOpts.Dir, "dir", "d", "", "project's root path")
+	modgenCmd.Flags().StringVarP(&mgOpts.Dir, "dir", "d", "", "repo root path")
 	modgenCmd.MarkFlagRequired("name")
 }

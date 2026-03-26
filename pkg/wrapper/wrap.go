@@ -69,9 +69,8 @@ func Translate(c echo.Context, res Response) error {
 
 	includeMetadata := res.IncludeTotal
 	if includeMetadata {
-		meta := map[string]interface{}{}
-		if res.IncludeTotal {
-			meta[TotalField] = res.Total
+		meta := map[string]interface{}{
+			TotalField: res.Total,
 		}
 
 		result[MetadataField] = meta

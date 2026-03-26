@@ -25,6 +25,13 @@ func NewAuthHandler(g *echo.Group, middManager *middlewares.MiddlewareManager, u
 	apiV1.GET("/success", handler.LoginSuccess)
 }
 
+// LoginForm godoc
+// @Summary      Show login form
+// @Description  Renders Firebase login UI
+// @Tags         auth
+// @Produce      html
+// @Success      200  {string}  string  "HTML login page"
+// @Router       /auth/login [get]
 func (h *AuthHandler) LoginForm(c echo.Context) error {
 	data := map[string]interface{}{
 		"config":      h.Configs.FirebaseAuthCreds,
@@ -33,6 +40,13 @@ func (h *AuthHandler) LoginForm(c echo.Context) error {
 	return c.Render(http.StatusOK, "login.go.tpl", data)
 }
 
+// LoginSuccess godoc
+// @Summary      Show login success
+// @Description  Renders Firebase login success UI
+// @Tags         auth
+// @Produce      html
+// @Success      200  {string}  string  "HTML success page"
+// @Router       /auth/success [get]
 func (h *AuthHandler) LoginSuccess(c echo.Context) error {
 	data := map[string]interface{}{
 		"config": h.Configs.FirebaseAuthCreds,

@@ -7,25 +7,20 @@
       "access": ["delete:org", "update:org"]
     },
     "manager": {
-      "access": ["invite:org"],
+      "access": ["invite:org", "create:project", "update:project", "delete:project"],
       "owner": "owner"
     },
     "editor": {
-      "access": ["create:project", "update:project", "delete:project"],
+      "access": [],
       "owner": "manager"
     },
     "viewer": {
       "access": [
-        "read:user",
-        "update:user",
-
         "read:org",
         "list:org",
 
         "list:project",
-        "read:project",
-
-        "read:me"
+        "read:project"
       ],
       "owner": "manager"
     },

@@ -19,6 +19,31 @@ definitions:
       updated_at:
         type: string
     type: object
+  domains.Project:
+    properties:
+      archived_at:
+        type: string
+      code:
+        type: string
+      created_at:
+        type: string
+      default_language:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      org_id:
+        type: integer
+      settings:
+        type: string
+      timezone:
+        type: string
+      updated_at:
+        type: string
+    type: object
   domains.User:
     description: User account information
     properties:
@@ -69,16 +94,67 @@ definitions:
     - UserStatusDeactivated
     - UserStatusBanned
     - UserStatusInvited
-  dto.UpdateUserReq:
+  dto.CreateOrgReq:
     properties:
-      first_name:
+      description:
         type: string
-      last_name:
+      domain:
         type: string
-      phone:
+      logo:
         type: string
-      status:
+      name:
         type: string
+    type: object
+  dto.CreateProjectReq:
+    properties:
+      default_language:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      org_id:
+        type: integer
+      timezone:
+        type: string
+    type: object
+  dto.InviteUsers:
+    properties:
+      emails:
+        items:
+          type: string
+        type: array
+    type: object
+  dto.UpdateOrgReq:
+    properties:
+      description:
+        type: string
+      domain:
+        type: string
+      logo:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.UpdateProjectReq:
+    properties:
+      default_language:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      timezone:
+        type: string
+    type: object
+  wrapper.FailResponse:
+    properties:
+      message:
+        example: Example message
+        type: string
+      success:
+        example: false
+        type: boolean
     type: object
   wrapper.SuccessResponse:
     properties:
@@ -105,7 +181,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get list org
+      description: Get list of organizations for current user
       parameters:
       - description: Number of records should be returned
         in: query
@@ -129,6 +205,18 @@ paths:
                     $ref: '#/definitions/domains.Org'
                   type: array
               type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
       security:
       - XFirebaseBearer: []
       summary: Get list org
@@ -137,12 +225,19 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new org
+      description: Create a new organization
+      parameters:
+      - description: Organization creation request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateOrgReq'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             allOf:
             - $ref: '#/definitions/wrapper.SuccessResponse'
@@ -150,12 +245,62 @@ paths:
                 data:
                   $ref: '#/definitions/domains.Org'
               type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
       security:
       - XFirebaseBearer: []
       summary: Create a new org
       tags:
       - orgs
   /admin/orgs/{orgId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete organization by ID
+      parameters:
+      - description: Org ID
+        in: path
+        name: orgId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wrapper.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Delete org
+      tags:
+      - orgs
     get:
       consumes:
       - application/json
@@ -178,16 +323,353 @@ paths:
                 data:
                   $ref: '#/definitions/domains.Org'
               type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
       security:
       - XFirebaseBearer: []
       summary: Get org info
       tags:
       - orgs
+    put:
+      consumes:
+      - application/json
+      description: Update organization by ID
+      parameters:
+      - description: Org ID
+        in: path
+        name: orgId
+        required: true
+        type: integer
+      - description: Organization update request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateOrgReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wrapper.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Update org info
+      tags:
+      - orgs
+  /admin/orgs/{orgId}/invites:
+    post:
+      consumes:
+      - application/json
+      description: Send invitation emails to users to join organization
+      parameters:
+      - description: Org ID
+        in: path
+        name: orgId
+        required: true
+        type: integer
+      - description: Invitation request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.InviteUsers'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wrapper.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Invite users to org
+      tags:
+      - orgs
+  /admin/projects:
+    get:
+      consumes:
+      - application/json
+      description: Get list of projects
+      parameters:
+      - description: Number of records should be returned
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domains.Project'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: List projects
+      tags:
+      - projects
+    post:
+      consumes:
+      - application/json
+      description: Create a new project under an organization
+      parameters:
+      - description: Project creation request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateProjectReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.Project'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Create a new project
+      tags:
+      - projects
+  /admin/projects/{projectId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete project by ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: projectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wrapper.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Delete project
+      tags:
+      - projects
+    get:
+      consumes:
+      - application/json
+      description: Get project by ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: projectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.Project'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Get project info
+      tags:
+      - projects
+    put:
+      consumes:
+      - application/json
+      description: Update project by ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: projectId
+        required: true
+        type: integer
+      - description: Project update request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProjectReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wrapper.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Update project
+      tags:
+      - projects
   /admin/users:
     get:
       consumes:
       - application/json
       description: Get list user info
+      parameters:
+      - description: Number of records should be returned
+        in: query
+        name: limit
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
       produces:
       - application/json
       responses:
@@ -202,47 +684,24 @@ paths:
                     $ref: '#/definitions/domains.User'
                   type: array
               type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
       security:
       - XFirebaseBearer: []
       summary: Get list user info
       tags:
       - users
-    post:
-      consumes:
-      - application/json
-      description: Craete a new user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/wrapper.SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/domains.User'
-              type: object
-      summary: Craete a new user
-      tags:
-      - users
   /admin/users/{userId}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/wrapper.SuccessResponse'
-      security:
-      - XFirebaseBearer: []
-      summary: Delete user
-      tags:
-      - users
     get:
       consumes:
       - application/json
@@ -265,44 +724,58 @@ paths:
                 data:
                   $ref: '#/definitions/domains.User'
               type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
       security:
       - XFirebaseBearer: []
       summary: Get user info
       tags:
       - users
-    put:
-      consumes:
-      - application/json
-      description: Update user info
-      parameters:
-      - description: Request body update user
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateUserReq'
-      - description: User ID
-        in: path
-        name: userId
-        required: true
-        type: integer
+  /auth/login:
+    get:
+      description: Renders Firebase login UI
       produces:
-      - application/json
+      - text/html
       responses:
         "200":
-          description: OK
+          description: HTML login page
           schema:
-            $ref: '#/definitions/wrapper.SuccessResponse'
-      security:
-      - XFirebaseBearer: []
-      summary: Update user info
+            type: string
+      summary: Show login form
       tags:
-      - users
+      - auth
+  /auth/success:
+    get:
+      description: Renders Firebase login success UI
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: HTML success page
+          schema:
+            type: string
+      summary: Show login success
+      tags:
+      - auth
   /me:
     get:
       consumes:
       - application/json
-      description: Get current user info
+      description: Get current authenticated user info
       produces:
       - application/json
       responses:
@@ -315,11 +788,48 @@ paths:
                 data:
                   $ref: '#/definitions/domains.User'
               type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
       security:
       - XFirebaseBearer: []
       summary: Get current user info
       tags:
-      - users
+      - auth
+    put:
+      consumes:
+      - application/json
+      description: Update current authenticated user info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/wrapper.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domains.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/wrapper.FailResponse'
+      security:
+      - XFirebaseBearer: []
+      summary: Update current user info
+      tags:
+      - auth
 securityDefinitions:
   XFirebaseBearer:
     description: Enter the token with the `Bearer ` prefix, e.g. `Bearer jwt_token_string`.
