@@ -1,20 +1,22 @@
 package deny
 
+import future.keywords.if
+import future.keywords.in
 import data.utils
 
-deny_user_endpoint := deny_get_user 
-| deny_update_user 
-| deny_delete_user 
-| deny_get_list_user 
-| deny_create_user
+deny_user_endpoint := deny_get_user |
+	deny_update_user |
+	deny_delete_user |
+	deny_get_list_user |
+	deny_create_user
 
-is_get_user_info {
+is_get_user_info if {
 	not utils.is_super_admin
 	input.method == "GET"
 	input.endpoint == "/admin/users/:userId"
 }
 
-is_update_user_info {
+is_update_user_info if {
 	not utils.is_super_admin
 	input.method == "PUT"
 	input.endpoint == "/admin/users/:userId"
@@ -22,14 +24,12 @@ is_update_user_info {
 
 # START Get user info
 deny_get_user[msg] {
-	# invalid user info
 	is_get_user_info
 	not input.user_info
 	msg := "user id is invalid"
 }
 
 deny_get_user[msg] {
-	# invalid user info
 	is_get_user_info
 	not utils.is_super_admin
 	input.user_info.id <= 0
@@ -37,7 +37,6 @@ deny_get_user[msg] {
 }
 
 deny_get_user[msg] {
-	# invalid user info
 	is_get_user_info
 	not input.user_info.id
 	msg := "user id is invalid"
@@ -65,7 +64,6 @@ deny_update_user[msg] {
 }
 
 deny_update_user[msg] {
-	# invalid user info
 	is_update_user_info
 	not input.user_info.id
 	msg := "user id is invalid"
