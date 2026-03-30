@@ -7,6 +7,6 @@ default is_super_admin := false
 
 is_super_admin if {
 	input.user.email in [
-		"hello@iamdzung.com",
+		"your_admin@email.com",
 	]
 }
