@@ -1,0 +1,35 @@
+# Version control
+.git
+.gitignore
+
+# Documentation
+*.md
+!go.mod
+LICENSE
+
+# Development files
+.env
+.env.*
+!.env.example
+!.env.docker
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+coverage.txt
+*.test
+
+# Build outputs
+bin/
+tmp/
+
+# Docker
+Dockerfile
+docker-compose*.yaml
+
+# External tools
+tools/

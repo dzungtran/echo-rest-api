@@ -1,21 +1,31 @@
-# Load golang image to build
-FROM golang:1.25-alpine as builder
-ARG APP_PATH
+# Build stage
+FROM golang:1.25-alpine AS builder
 
-RUN mkdir -p /app
+# Install build dependencies in a single layer
+RUN apk add --no-cache git
+
 WORKDIR /app
-COPY . .
 
+# Copy go mod files first for better layer caching
+COPY go.mod go.sum ./
 RUN go mod download
-RUN go build -buildvcs=false -o=appbin $APP_PATH
 
+# Copy source and build
+COPY . .
+ARG APP_PATH
+RUN go build -ldflags="-s -w" -buildvcs=false -o appbin $APP_PATH
 
-# Deploy execute file to simple linux server
+# Runtime stage
 FROM alpine
-RUN mkdir -p /app
+
+RUN apk add --no-cache ca-certificates tzdata
+
 WORKDIR /app
-COPY --chown=0:0 --from=builder /app/ ./
+COPY --chown=65532:65532 --from=builder /app/appbin .
 
 EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
 
 ENTRYPOINT ["/app/appbin"]

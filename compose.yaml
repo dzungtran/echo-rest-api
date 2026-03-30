@@ -1,0 +1,47 @@
+services:
+  rest_api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        APP_PATH: ./cmd/api/
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    # healthcheck:
+    #   test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/"]
+    #   interval: 30s
+    #   timeout: 5s
+    #   retries: 3
+    #   start_period: 10s
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      POSTGRES_DB: echo_rest_api
+      POSTGRES_USER: world
+      POSTGRES_PASSWORD: hello
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U world -d echo_rest_api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  backend:
+
+volumes:
+  postgres_data:
